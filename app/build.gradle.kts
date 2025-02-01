@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,6 +23,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val localProperties = getLocalProperties()
+        val apiKey = localProperties.getProperty("WEATHER_API_KEY")
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -41,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -78,4 +85,10 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+private fun getLocalProperties(): Properties {
+    val propertiesFile = project.rootProject.file("local.properties")
+    val properties = Properties().apply { load(propertiesFile.inputStream()) }
+    return properties
 }
