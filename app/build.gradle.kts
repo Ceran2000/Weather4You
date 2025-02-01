@@ -25,8 +25,8 @@ android {
         }
 
         val localProperties = getLocalProperties()
-        val apiKey = localProperties.getProperty("WEATHER_API_KEY")
-        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        val apiKey = localProperties.getProperty("OPEN_WEATHER_API_KEY")
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {

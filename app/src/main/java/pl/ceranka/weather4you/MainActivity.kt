@@ -8,14 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import pl.ceranka.weather4you.data.remote.WeatherApiService
+import pl.ceranka.weather4you.data.remote.OpenWeatherService
 import pl.ceranka.weather4you.ui.theme.Weather4YouTheme
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject lateinit var weatherApiService: WeatherApiService
+    @Inject lateinit var openWeatherService: OpenWeatherService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

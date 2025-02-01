@@ -12,13 +12,13 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WeatherApiModule {
+object OpenWeatherModule {
 
     private const val API_URL = "https://api.openweathermap.org/data/2.5/"
 
     @Provides
     @Singleton
-    @Named("WeatherApi")
+    @Named("OpenWeather")
     fun provideRetrofit(): Retrofit {
         val client = OkHttpClient.Builder().build()
 
@@ -31,7 +31,7 @@ object WeatherApiModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApiService(@Named("WeatherApi") retrofit: Retrofit): WeatherApiService {
-        return retrofit.create(WeatherApiService::class.java)
+    fun provideWeatherApiService(@Named("OpenWeather") retrofit: Retrofit): OpenWeatherService {
+        return retrofit.create(OpenWeatherService::class.java)
     }
 }
