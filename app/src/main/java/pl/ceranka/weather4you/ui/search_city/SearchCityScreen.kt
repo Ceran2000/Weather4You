@@ -2,11 +2,8 @@ package pl.ceranka.weather4you.ui.search_city
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,6 +47,7 @@ fun SearchCityScreen(
     viewModel: SearchCityViewModel = hiltViewModel()
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val isQueryValid by viewModel.isSearchQueryValid.collectAsStateWithLifecycle()
     val cities by viewModel.cities.collectAsStateWithLifecycle()
     val showResults = cities.isNotEmpty()
     val showRecentCities = recentCities.isNotEmpty()
@@ -66,28 +64,11 @@ fun SearchCityScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = viewModel::onSearchQueryChanged,
-                    label = { Text("Wyszukaj miasto") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = viewModel::clearSearchQueryClicked
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    singleLine = true,
-                    shape = ShapeDefaults.Medium,
+                SearchInputField(
+                    searchQuery = searchQuery,
+                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                    onClearSearchQueryClicked = viewModel::onClearSearchQueryClicked,
+                    isQueryValid = isQueryValid,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -114,6 +95,45 @@ fun SearchCityScreen(
             }
         }
     }
+}
+
+@Composable
+private fun SearchInputField(
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    onClearSearchQueryClicked: () -> Unit,
+    isQueryValid: Boolean,
+    modifier: Modifier
+) {
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = onSearchQueryChanged,
+        label = { Text("Wyszukaj miasto") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null
+            )
+        },
+        trailingIcon = {
+            IconButton(
+                onClick = onClearSearchQueryClicked
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null
+                )
+            }
+        },
+        supportingText = {
+            if (!isQueryValid) {
+                Text("Nazwa niepoprawna!", color = MaterialTheme.colorScheme.error)
+            }
+        },
+        singleLine = true,
+        shape = ShapeDefaults.Medium,
+        modifier = modifier
+    )
 }
 
 @Composable
