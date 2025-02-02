@@ -69,7 +69,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    //Serialization
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    implementation(libs.dagger.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,10 +87,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
+
+    //TODO: remove
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 }
 
 kapt {

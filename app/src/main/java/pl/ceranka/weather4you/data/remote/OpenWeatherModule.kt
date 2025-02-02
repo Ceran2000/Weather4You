@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
@@ -20,7 +21,13 @@ object OpenWeatherModule {
     @Singleton
     @Named("OpenWeather")
     fun provideRetrofit(): Retrofit {
-        val client = OkHttpClient.Builder().build()
+        val interceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
 
         return Retrofit.Builder()
             .baseUrl(API_URL)
