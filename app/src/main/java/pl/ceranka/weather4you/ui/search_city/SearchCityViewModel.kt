@@ -33,6 +33,10 @@ class SearchCityViewModel @Inject constructor(
         _searchQuery.value = input
     }
 
+    fun clearSearchQueryClicked() {
+        _searchQuery.value = ""
+    }
+
     private val _cities = MutableStateFlow<List<City>>(emptyList())
     val cities = _cities.asStateFlow()
 

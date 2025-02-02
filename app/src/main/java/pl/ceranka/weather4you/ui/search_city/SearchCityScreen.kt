@@ -1,11 +1,19 @@
 package pl.ceranka.weather4you.ui.search_city
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ChevronRight
@@ -13,9 +21,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -30,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import pl.ceranka.weather4you.data.model.City
 import pl.ceranka.weather4you.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,51 +76,65 @@ fun SearchCityScreen(
                             contentDescription = null
                         )
                     },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = viewModel::clearSearchQueryClicked
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    singleLine = true,
                     shape = ShapeDefaults.Medium,
-                    maxLines = 1,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                if (showResults) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                    ) {
-                        cities.forEach {
-                            SearchResultItem(text = "${it.name}, ${it.sys.country}")
-                        }
-                    }
+                AnimatedVisibility(
+                    visible = showResults,
+                    modifier = Modifier.weight(1f, fill = false)
+                ) {
+                    SearchResultsList(
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                        cities = cities
+                    )
+
                 }
 
                 if (showRecentCities) {
-                    Text(
-                        text = "Recent searches",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    RecentCitiesList(
+                        modifier = Modifier
+                            .animateContentSize()
+                            .weight(1f, false)
+                            .padding(top = 16.dp),
+                        cities = recentCities
                     )
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        recentCities.forEach {
-                            RecentItem(it)
-                        }
-                    }
                 }
-
-
             }
         }
     }
 }
 
-private val recentCities: List<String> = listOf(
-    "New York, United States",
-    "Łódź, Poland",
-    "Warszawa, Poland"
-)
+@Composable
+private fun SearchResultsList(
+    modifier: Modifier,
+    cities: List<City>,
+    onCitySelected: (City) -> Unit = {}
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        LazyColumn {
+            items(cities, key = { it.id }) {
+                SearchResultItem(text = "${it.name}, ${it.sys.country}")
+            }
+        }
+    }
+}
+
+
 
 @Composable
 private fun SearchResultItem(text: String) {
@@ -118,6 +143,34 @@ private fun SearchResultItem(text: String) {
         leadingIcon = Icons.Default.LocationOn,
         trailingIcon = Icons.Default.ChevronRight
     )
+}
+
+@Composable
+private fun RecentCitiesList(
+    modifier: Modifier,
+    cities: List<String>,
+    onRemoveClick: () -> Unit = {}
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = "Recent searches",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            LazyColumn {
+                itemsIndexed(cities, key = { index, _ -> index }) { index, item ->
+                    RecentItem(item)
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -168,3 +221,15 @@ private fun ListItem(
 
     }
 }
+
+private val recentCities: List<String> = listOf(
+    "New York, United States",
+    "Łódź, Poland",
+    "Warszawa, Poland",
+    "New York, United States",
+    "Łódź, Poland",
+    "Warszawa, Poland",
+    "New York, United States",
+    "Łódź, Poland",
+    "Warszawa, Poland"
+)
