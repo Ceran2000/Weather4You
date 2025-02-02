@@ -10,7 +10,7 @@ import retrofit2.http.Query
 interface OpenWeatherService {
     @GET("weather")
     fun getWeather(
-        @Query("q") cityName: String,
+        @Query("id") cityId: Int,
         @Query("appid") apiKey: String = BuildConfig.OPEN_WEATHER_API_KEY,
         @Query("units") units: String = "metric"
     ): Call<WeatherResponse>

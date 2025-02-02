@@ -2,6 +2,7 @@ package pl.ceranka.weather4you.ui.search_city
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import pl.ceranka.weather4you.data.model.City
+import pl.ceranka.weather4you.navigation.WeatherForCity
 import pl.ceranka.weather4you.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,8 +79,11 @@ fun SearchCityScreen(
                     modifier = Modifier.weight(1f, fill = false)
                 ) {
                     SearchResultsList(
-                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                        cities = cities
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        cities = cities,
+                        onCityClicked = { navController.navigate(WeatherForCity(it.id)) }
                     )
 
                 }
@@ -140,15 +145,18 @@ private fun SearchInputField(
 private fun SearchResultsList(
     modifier: Modifier,
     cities: List<City>,
-    onCitySelected: (City) -> Unit = {}
+    onCityClicked: (City) -> Unit
 ) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         LazyColumn {
-            items(cities, key = { it.id }) {
-                SearchResultItem(text = "${it.name}, ${it.sys.country}")
+            items(cities, key = { it.id }) { city ->
+                SearchResultItem(
+                    text = "${city.name}, ${city.sys.country}",
+                    onItemClicked = { onCityClicked(city) }
+                )
             }
         }
     }
@@ -157,11 +165,15 @@ private fun SearchResultsList(
 
 
 @Composable
-private fun SearchResultItem(text: String) {
+private fun SearchResultItem(
+    text: String,
+    onItemClicked: () -> Unit
+) {
     ListItem(
         title = text,
         leadingIcon = Icons.Default.LocationOn,
-        trailingIcon = Icons.Default.ChevronRight
+        trailingIcon = Icons.Default.ChevronRight,
+        onItemClicked = onItemClicked
     )
 }
 
@@ -206,12 +218,14 @@ private fun RecentItem(text: String) {
 private fun ListItem(
     title: String,
     leadingIcon: ImageVector? = null,
-    trailingIcon: ImageVector? = null
+    trailingIcon: ImageVector? = null,
+    onItemClicked: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .clickable(enabled = onItemClicked != null) { onItemClicked!!.invoke() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (leadingIcon != null) {

@@ -14,12 +14,3 @@ data class City(
     val name: String,
     val sys: Sys
 )
-
-data class Coord(
-    val lat: Double,
-    val lon: Double
-)
-
-data class Sys(
-    val country: String
-)

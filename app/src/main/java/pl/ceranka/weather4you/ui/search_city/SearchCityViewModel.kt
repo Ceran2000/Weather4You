@@ -53,11 +53,13 @@ class SearchCityViewModel @Inject constructor(
     private suspend fun searchCityTemp(cityName: String): List<City> = cityRepository.loadCities(cityName)
 
     init {
+        //TODO: test
         searchQuery
-            .filter { it.isNotBlank() && it.matches(searchQueryRegex)  }
             .debounce(300)
             .onEach { query ->
-                _cities.update { searchCityTemp(query) }
+                _cities.update {
+                    if (query.matches(searchQueryRegex)) searchCityTemp(query) else emptyList()
+                }
             }
             .launchIn(viewModelScope)
     }
