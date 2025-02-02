@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -17,15 +16,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import pl.ceranka.weather4you.data.model.City
-import pl.ceranka.weather4you.data.remote.OpenWeatherService
-import retrofit2.await
+import pl.ceranka.weather4you.data.repository.CityRepository
 import javax.inject.Inject
 
 @Suppress("OPT_IN_USAGE")
 @HiltViewModel
 class SearchCityViewModel @Inject constructor(
     application: Application,
-    private val weatherService: OpenWeatherService
+    private val cityRepository: CityRepository
 ) : AndroidViewModel(application) {
 
     private val _searchQuery = MutableStateFlow("")
@@ -43,33 +41,25 @@ class SearchCityViewModel @Inject constructor(
         "^(?!\\s*$)[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż\\s-]+$".toRegex() //TODO: should ignore '-'?
     }
 
-    val isSearchQueryValid: StateFlow<Boolean> by lazy {
-        searchQuery.map { it.isEmpty() || it.matches(searchQueryRegex) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
+    val showSearchQueryError: StateFlow<Boolean> by lazy {
+        searchQuery
+            .map { it.isNotEmpty() && !it.matches(searchQueryRegex) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     }
 
     private val _cities = MutableStateFlow<List<City>>(emptyList())
     val cities = _cities.asStateFlow()
 
-    private suspend fun searchCityTemp(cityName: String): List<City> {
-        return try {
-            weatherService.getCities(cityName).await().list
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
+    private suspend fun searchCityTemp(cityName: String): List<City> = cityRepository.loadCities(cityName)
 
     init {
         searchQuery
-            .drop(1)
-            .filter { isSearchQueryValid.value }
+            .filter { it.isNotBlank() && it.matches(searchQueryRegex)  }
             .debounce(300)
             .onEach { query ->
-                //TODO: error handling
                 _cities.update { searchCityTemp(query) }
             }
             .launchIn(viewModelScope)
-
     }
 
 }

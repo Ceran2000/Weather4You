@@ -47,7 +47,7 @@ fun SearchCityScreen(
     viewModel: SearchCityViewModel = hiltViewModel()
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val isQueryValid by viewModel.isSearchQueryValid.collectAsStateWithLifecycle()
+    val showSearchQueryError by viewModel.showSearchQueryError.collectAsStateWithLifecycle()
     val cities by viewModel.cities.collectAsStateWithLifecycle()
     val showResults = cities.isNotEmpty()
     val showRecentCities = recentCities.isNotEmpty()
@@ -68,7 +68,7 @@ fun SearchCityScreen(
                     searchQuery = searchQuery,
                     onSearchQueryChanged = viewModel::onSearchQueryChanged,
                     onClearSearchQueryClicked = viewModel::onClearSearchQueryClicked,
-                    isQueryValid = isQueryValid,
+                    showError = showSearchQueryError,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -102,7 +102,7 @@ private fun SearchInputField(
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
     onClearSearchQueryClicked: () -> Unit,
-    isQueryValid: Boolean,
+    showError: Boolean,
     modifier: Modifier
 ) {
     OutlinedTextField(
@@ -126,7 +126,7 @@ private fun SearchInputField(
             }
         },
         supportingText = {
-            if (!isQueryValid) {
+            if (showError) {
                 Text("Nazwa niepoprawna!", color = MaterialTheme.colorScheme.error)
             }
         },
