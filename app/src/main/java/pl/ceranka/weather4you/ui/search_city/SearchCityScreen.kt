@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import pl.ceranka.weather4you.data.model.city.City
 import pl.ceranka.weather4you.navigation.WeatherForCity
+import pl.ceranka.weather4you.ui.components.TopBar
 import pl.ceranka.weather4you.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,10 @@ fun SearchCityScreen(
     AppTheme {
         Scaffold(
             topBar = {
-                CenterAlignedTopAppBar(title = { Text("Weather4You") })
+                TopBar(
+                    title = { Text("Weather4You") },
+                    navigationAction = null
+                )
             }
         ) { innerPadding ->
             Column(
