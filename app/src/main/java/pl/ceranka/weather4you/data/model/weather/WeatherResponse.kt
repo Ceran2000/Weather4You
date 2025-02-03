@@ -1,4 +1,8 @@
-package pl.ceranka.weather4you.data.model
+package pl.ceranka.weather4you.data.model.weather
+
+import pl.ceranka.weather4you.data.model.forecast.Sys
+import pl.ceranka.weather4you.data.model.forecast.Weather
+import pl.ceranka.weather4you.data.model.forecast.Wind
 
 data class WeatherResponse(
     val base: String,
@@ -18,6 +22,11 @@ data class WeatherResponse(
 
 data class Clouds(
     val all: Int
+)
+
+data class Coord(
+    val lat: Double,
+    val lon: Double
 )
 
 data class Main(

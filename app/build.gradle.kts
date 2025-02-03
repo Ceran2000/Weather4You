@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.ceranka.weather4you"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     //Serialization
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    //Coil
+    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
 
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
