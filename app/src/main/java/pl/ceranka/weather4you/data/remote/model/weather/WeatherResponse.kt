@@ -1,8 +1,10 @@
-package pl.ceranka.weather4you.data.model.weather
+package pl.ceranka.weather4you.data.remote.model.weather
 
-import pl.ceranka.weather4you.data.model.forecast.Sys
-import pl.ceranka.weather4you.data.model.forecast.Weather
-import pl.ceranka.weather4you.data.model.forecast.Wind
+import pl.ceranka.weather4you.data.model.weather.Weather as WeatherExternalModel
+import pl.ceranka.weather4you.data.remote.model.forecast.Sys
+import pl.ceranka.weather4you.data.remote.model.forecast.Weather
+import pl.ceranka.weather4you.data.remote.model.forecast.Wind
+import kotlin.math.roundToInt
 
 data class WeatherResponse(
     val base: String,
@@ -52,3 +54,18 @@ data class Wind(
     val gust: Double,
     val speed: Double
 )
+
+fun WeatherResponse.asExternalModel(): WeatherExternalModel {
+    val weather = weather.first()   //TODO
+
+    return WeatherExternalModel(
+        name = name,
+        description = weather.description,
+        iconCode = weather.icon,
+        temp = main.temp.roundToInt(),
+        tempFeelsLike = main.feels_like.roundToInt(),
+        humidity = main.humidity,
+        cloudinessInPercentage = clouds.all,
+        visibilityInMeters = visibility
+    )
+}

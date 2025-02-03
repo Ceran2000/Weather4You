@@ -43,14 +43,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import pl.ceranka.weather4you.data.model.forecast.Weather
-import pl.ceranka.weather4you.data.model.weather.WeatherResponse
+import pl.ceranka.weather4you.data.model.weather.Weather
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,8 +56,8 @@ fun WeatherForCityScreen(
     navController: NavController,
     viewModel: WeatherForCityViewModel = hiltViewModel()
 ) {
-    val weatherResponse by viewModel.weather.collectAsStateWithLifecycle()
-    val forecastResponse by viewModel.forecast.collectAsStateWithLifecycle()
+    val weather by viewModel.weather.collectAsStateWithLifecycle()
+    val forecasts by viewModel.forecasts.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -80,11 +78,7 @@ fun WeatherForCityScreen(
         }
     ) { innerPadding ->
         //TODO: remove
-        if (weatherResponse == null) return@Scaffold
-        val weather = weatherResponse!!.weather.first()
-
-        if (forecastResponse == null) return@Scaffold
-        val forecast = forecastResponse!!.list.first()
+        if (weather == null || forecasts == null) return@Scaffold
 
         Column(
             modifier = Modifier
@@ -93,17 +87,16 @@ fun WeatherForCityScreen(
                 .padding(innerPadding)
         ) {
             MainInfo(
-                weatherResponse = weatherResponse!!,
-                weather = weather,
+                weather = weather!!,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             AdditionalInfo(
-                feelsLike = weatherResponse!!.main.feels_like.roundToInt().toString(),
-                visibilityInMeters = weatherResponse!!.visibility,
-                rainInPercent = forecast.pop,
+                feelsLike = weather!!.tempFeelsLike.toString(),
+                visibilityInMeters = weather!!.visibilityInMeters,
+                rainInPercent = forecasts!![0].precipitationInPercentage,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -127,11 +120,11 @@ fun WeatherForCityScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) {
-                    items(forecastResponse!!.list) { forecast ->
+                    items(items = forecasts!!) {forecast ->
                         HourlyForecastItem(
-                            dateTimeSecondsUTC = forecast.dt,
-                            icon = forecast.weather.first().icon,
-                            temp = forecast.main.temp
+                            dateTimeSecondsUTC = forecast.dateTimeSecondsUTC,
+                            icon = forecast.iconCode,
+                            temp = forecast.temp
 
                         )
                     }
@@ -145,7 +138,6 @@ fun WeatherForCityScreen(
 
 @Composable
 private fun MainInfo(
-    weatherResponse: WeatherResponse,
     weather: Weather,
     modifier: Modifier
 ) {
@@ -153,7 +145,7 @@ private fun MainInfo(
         modifier = modifier
     ) {
         Text(
-            text = weatherResponse.name,
+            text = weather.name,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
@@ -161,7 +153,7 @@ private fun MainInfo(
                 .align(Alignment.CenterHorizontally)
         )
         AsyncImage(
-            model = "https://openweathermap.org/img/wn/" + weather.icon + "@2x.png",
+            model = "https://openweathermap.org/img/wn/" + weather.iconCode + "@2x.png",
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -169,7 +161,7 @@ private fun MainInfo(
                 .padding(top = 16.dp)
         )
         Text(
-            text = "${weatherResponse.main.temp.roundToInt()}*C",
+            text = "${weather.temp}*C",
             style = MaterialTheme.typography.headlineLarge,         //TODO: style
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
@@ -194,7 +186,7 @@ private fun MainInfo(
             InfoBox(
                 icon = Icons.Default.LocationOn,
                 name = "Humidity",
-                value = "${weatherResponse.main.humidity} %",
+                value = "${weather.humidity} %",
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -202,7 +194,7 @@ private fun MainInfo(
             InfoBox(
                 icon = Icons.Default.AddLocation,
                 name = "Cloudiness",
-                value = "${weatherResponse.clouds.all} %",
+                value = "${weather.cloudinessInPercentage} %",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -213,7 +205,7 @@ private fun MainInfo(
 private fun AdditionalInfo(
     feelsLike: String,
     visibilityInMeters: Int,
-    rainInPercent: Double,
+    rainInPercent: Int,
     modifier: Modifier
 ) {
     //visibility
@@ -254,7 +246,7 @@ private fun AdditionalInfo(
 
 @Composable
 @Preview
-fun AdditionalInfoPreview() = AdditionalInfo("10*C", 1000, 50.0, modifier = Modifier.fillMaxWidth())
+fun AdditionalInfoPreview() = AdditionalInfo("10*C", 1000, 50, modifier = Modifier.fillMaxWidth())
 
 @Composable
 private fun AdditionalInfoRow(
@@ -328,12 +320,12 @@ private fun InfoBox(
 private fun HourlyForecastItem(
     dateTimeSecondsUTC: Int,
     icon: String,
-    temp: Double
+    temp: Int
 ) {
     val zonedDateTime = remember { Instant.ofEpochSecond(dateTimeSecondsUTC.toLong()).atZone(ZoneId.systemDefault()) }
     val day = remember { zonedDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
     val time = remember { zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm")) }
-    
+
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
@@ -352,13 +344,13 @@ private fun HourlyForecastItem(
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             AsyncImage(
-                model = "https://openweathermap.org/img/wn/" + icon + "@2x.png",
+                model = "https://openweathermap.org/img/wn/$icon@2x.png",
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
             )
             Text(
-                text = "${temp.roundToInt()} *C",
+                text = "$temp *C",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )

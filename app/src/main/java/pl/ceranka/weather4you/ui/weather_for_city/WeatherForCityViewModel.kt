@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.ceranka.weather4you.data.model.forecast.ForecastResponse
-import pl.ceranka.weather4you.data.model.weather.WeatherResponse
+import pl.ceranka.weather4you.data.model.forecast.Forecast
+import pl.ceranka.weather4you.data.model.weather.Weather
 import pl.ceranka.weather4you.data.repository.ForecastRepository
 import pl.ceranka.weather4you.data.repository.WeatherRepository
 import javax.inject.Inject
@@ -25,17 +25,17 @@ class WeatherForCityViewModel @Inject constructor(
 
     private val cityId: Int = checkNotNull(savedStateHandle["id"])
 
-    private val _weather = MutableStateFlow<WeatherResponse?>(null)
+    private val _weather = MutableStateFlow<Weather?>(null)
     val weather = _weather.asStateFlow()
 
-    private val _forecast = MutableStateFlow<ForecastResponse?>(null)
-    val forecast = _forecast.asStateFlow()
+    private val _forecasts = MutableStateFlow<List<Forecast>?>(null)
+    val forecasts = _forecasts.asStateFlow()
 
     init {
         viewModelScope.launch {
             //TODO: async/await?
-            _weather.update { weatherRepository.loadWeatherForCity(cityId) }
-            _forecast.update { forecastRepository.loadForecastForCity(cityId) }
+            _weather.update { weatherRepository.loadCurrentWeatherForCity(cityId) }
+            _forecasts.update { forecastRepository.loadForecastForCity(cityId) }
         }
     }
 

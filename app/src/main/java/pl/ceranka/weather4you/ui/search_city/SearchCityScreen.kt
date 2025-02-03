@@ -154,7 +154,7 @@ private fun SearchResultsList(
         LazyColumn {
             items(cities, key = { it.id }) { city ->
                 SearchResultItem(
-                    text = "${city.name}, ${city.sys.country}",
+                    text = "${city.name}, ${city.country}",
                     onItemClicked = { onCityClicked(city) }
                 )
             }

@@ -1,9 +1,9 @@
 package pl.ceranka.weather4you.data.remote
 
 import pl.ceranka.weather4you.BuildConfig
-import pl.ceranka.weather4you.data.model.city.CityResponse
-import pl.ceranka.weather4you.data.model.forecast.ForecastResponse
-import pl.ceranka.weather4you.data.model.weather.WeatherResponse
+import pl.ceranka.weather4you.data.remote.model.city.CityResponse
+import pl.ceranka.weather4you.data.remote.model.forecast.ForecastResponse
+import pl.ceranka.weather4you.data.remote.model.weather.WeatherResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

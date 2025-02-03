@@ -1,4 +1,6 @@
-package pl.ceranka.weather4you.data.model.city
+package pl.ceranka.weather4you.data.remote.model.city
+
+import pl.ceranka.weather4you.data.model.city.City as CityExternalModel
 
 data class CityResponse(
     val cod: String,
@@ -27,3 +29,5 @@ data class Sys(
     val sunset: Int,
     val type: Int
 )
+
+fun City.asExternalModel() = CityExternalModel(id = id, name = name, country = sys.country)
