@@ -39,10 +39,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import pl.ceranka.weather4you.data.model.Temperature
 import pl.ceranka.weather4you.data.model.weather.Weather
 import java.time.Instant
 import java.time.ZoneId
@@ -94,7 +96,7 @@ fun WeatherForCityScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             AdditionalInfo(
-                feelsLike = weather!!.tempFeelsLike.toString(),
+                feelsLike = weather!!.tempFeelsLike.uiValue,
                 visibilityInMeters = weather!!.visibilityInMeters,
                 rainInPercent = forecasts!![0].precipitationInPercentage,
                 modifier = Modifier
@@ -123,14 +125,12 @@ fun WeatherForCityScreen(
                     items(items = forecasts!!) {forecast ->
                         HourlyForecastItem(
                             dateTimeSecondsUTC = forecast.dateTimeSecondsUTC,
-                            icon = forecast.iconCode,
+                            iconUrl = forecast.icon.url,
                             temp = forecast.temp
-
                         )
                     }
                 }
             }
-
         }
     }
 
@@ -145,7 +145,7 @@ private fun MainInfo(
         modifier = modifier
     ) {
         Text(
-            text = weather.name,
+            text = weather.cityName,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
@@ -153,7 +153,7 @@ private fun MainInfo(
                 .align(Alignment.CenterHorizontally)
         )
         AsyncImage(
-            model = "https://openweathermap.org/img/wn/" + weather.iconCode + "@2x.png",
+            model = weather.icon.url,
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -161,9 +161,9 @@ private fun MainInfo(
                 .padding(top = 16.dp)
         )
         Text(
-            text = "${weather.temp}*C",
-            style = MaterialTheme.typography.headlineLarge,         //TODO: style
-            color = MaterialTheme.colorScheme.onSurface,
+            text = weather.temp.uiValue,
+            fontSize = 24.sp,
+            color = weather.temp.color,
             modifier = Modifier
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)
@@ -319,8 +319,8 @@ private fun InfoBox(
 @Composable
 private fun HourlyForecastItem(
     dateTimeSecondsUTC: Int,
-    icon: String,
-    temp: Int
+    iconUrl: String,
+    temp: Temperature
 ) {
     val zonedDateTime = remember { Instant.ofEpochSecond(dateTimeSecondsUTC.toLong()).atZone(ZoneId.systemDefault()) }
     val day = remember { zonedDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
@@ -344,15 +344,15 @@ private fun HourlyForecastItem(
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             AsyncImage(
-                model = "https://openweathermap.org/img/wn/$icon@2x.png",
+                model = iconUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
             )
             Text(
-                text = "$temp *C",
+                text = temp.uiValue,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = temp.color
             )
         }
     }

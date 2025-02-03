@@ -1,5 +1,7 @@
 package pl.ceranka.weather4you.data.remote.model.forecast
 
+import pl.ceranka.weather4you.data.model.Icon
+import pl.ceranka.weather4you.data.model.Temperature
 import kotlin.math.roundToInt
 import pl.ceranka.weather4you.data.model.forecast.Forecast as ForecastExternalModel
 
@@ -85,7 +87,7 @@ data class Wind(
 
 fun Forecast.asExternalModel() = ForecastExternalModel(
     dateTimeSecondsUTC = dt,
-    iconCode = weather.first().icon,            //TODO
-    temp = main.temp.roundToInt(),
+    icon = Icon(weather.first().icon),            //TODO
+    temp = Temperature(main.temp.roundToInt()),
     precipitationInPercentage = pop.roundToInt()
 )

@@ -1,5 +1,7 @@
 package pl.ceranka.weather4you.data.remote.model.weather
 
+import pl.ceranka.weather4you.data.model.Icon
+import pl.ceranka.weather4you.data.model.Temperature
 import pl.ceranka.weather4you.data.model.weather.Weather as WeatherExternalModel
 import pl.ceranka.weather4you.data.remote.model.forecast.Sys
 import pl.ceranka.weather4you.data.remote.model.forecast.Weather
@@ -59,11 +61,11 @@ fun WeatherResponse.asExternalModel(): WeatherExternalModel {
     val weather = weather.first()   //TODO
 
     return WeatherExternalModel(
-        name = name,
+        cityName = name,
         description = weather.description,
-        iconCode = weather.icon,
-        temp = main.temp.roundToInt(),
-        tempFeelsLike = main.feels_like.roundToInt(),
+        icon = Icon(weather.icon),
+        temp = Temperature(main.temp.roundToInt()),
+        tempFeelsLike = Temperature(main.feels_like.roundToInt()),
         humidity = main.humidity,
         cloudinessInPercentage = clouds.all,
         visibilityInMeters = visibility
