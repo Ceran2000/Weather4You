@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import pl.ceranka.weather4you.data.model.city.City
 import pl.ceranka.weather4you.data.repository.CityRepository
 import javax.inject.Inject
@@ -24,6 +23,9 @@ class SearchCityViewModel @Inject constructor(
     application: Application,
     private val cityRepository: CityRepository
 ) : AndroidViewModel(application) {
+
+    private val _uiState = MutableStateFlow<UiState<List<City>>>(UiState.Initial)
+    val uiState = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
@@ -46,20 +48,29 @@ class SearchCityViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     }
 
-    private val _cities = MutableStateFlow<List<City>>(emptyList())
-    val cities = _cities.asStateFlow()
+    private suspend fun handleCitySearchQuery(cityName: String) {
+        when {
+            cityName.isEmpty() -> _uiState.emit(UiState.Initial)
+            !cityName.matches(searchQueryRegex) -> _uiState.emit(UiState.Empty)
+            else -> searchCities(cityName)
+        }
+    }
 
-    private suspend fun searchCityTemp(cityName: String): List<City> = cityRepository.loadCities(cityName)
+    private suspend fun searchCities(cityName: String) {
+        try {
+            _uiState.value = UiState.Loading
+            val cities = cityRepository.loadCities(cityName)
+            _uiState.value = if (cities.isEmpty()) UiState.Empty else UiState.ShowContent(cities)
+        } catch (e: Exception) {
+            UiState.Error("Unknown error")
+        }
+    }
 
     init {
         //TODO: test
         searchQuery
             .debounce(300)
-            .onEach { query ->
-                _cities.update {
-                    if (query.matches(searchQueryRegex)) searchCityTemp(query) else emptyList()
-                }
-            }
+            .onEach { query -> handleCitySearchQuery(query) }
             .launchIn(viewModelScope)
     }
 

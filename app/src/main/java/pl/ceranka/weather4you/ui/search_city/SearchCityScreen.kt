@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,9 +53,7 @@ fun SearchCityScreen(
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val showSearchQueryError by viewModel.showSearchQueryError.collectAsStateWithLifecycle()
-    val cities by viewModel.cities.collectAsStateWithLifecycle()
-    val showResults = cities.isNotEmpty()
-    val showRecentCities = recentCities.isNotEmpty()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AppTheme {
         Scaffold(
@@ -74,27 +75,47 @@ fun SearchCityScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                AnimatedVisibility(
-                    visible = showResults,
-                    modifier = Modifier.weight(1f, fill = false)
-                ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                AnimatedVisibility(visible = uiState.showContent) {
                     SearchResultsList(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        cities = cities,
+                        modifier = Modifier.fillMaxWidth(),
+                        cities = uiState.data ?: emptyList(),
                         onCityClicked = { navController.navigate(WeatherForCity(it.id)) }
                     )
-
                 }
 
-                if (showRecentCities) {
+                AnimatedVisibility(visible = uiState.showInitial) {
                     RecentCitiesList(
                         modifier = Modifier
-                            .animateContentSize()
-                            .weight(1f, false)
-                            .padding(top = 16.dp),
+                            .weight(1f, fill = false),
                         cities = recentCities
+                    )
+                }
+
+                if (uiState.showLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                if (uiState.showEmptyState) {
+                    Text(
+                        text = "No results",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                if (uiState.showError) {
+                    Text(
+                        text = "An error occurred. Please, try again later!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -161,8 +182,6 @@ private fun SearchResultsList(
         }
     }
 }
-
-
 
 @Composable
 private fun SearchResultItem(
