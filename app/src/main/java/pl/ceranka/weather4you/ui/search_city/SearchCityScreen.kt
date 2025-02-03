@@ -111,7 +111,7 @@ fun SearchCityScreen(
 
                 if (uiState.showError) {
                     Text(
-                        text = "An error occurred. Please, try again later!",
+                        text = uiState.errorMessage!!,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
