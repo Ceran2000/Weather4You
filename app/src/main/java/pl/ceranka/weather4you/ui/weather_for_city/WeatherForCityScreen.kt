@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -21,10 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import pl.ceranka.weather4you.data.model.forecast.Forecast
 import pl.ceranka.weather4you.data.model.weather.Weather
+import pl.ceranka.weather4you.ui.components.CollapsingTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,24 +47,23 @@ fun WeatherForCityScreen(
     navController: NavController,
     viewModel: WeatherForCityViewModel = hiltViewModel()
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+    val isCollapsed: Boolean by remember {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 }
+    }
+
     val weatherState by viewModel.weatherUiState.collectAsStateWithLifecycle()
     val forecasts by viewModel.forecasts.collectAsStateWithLifecycle()
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            //TODO: collapsing topbar
-            CenterAlignedTopAppBar(
-                title = { Text("Weather Details") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.navigateUp() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                }
+            CollapsingTopBar(
+                title = weatherState.data?.cityName.orEmpty(),
+                isCollapsed = isCollapsed,
+                scrollBehavior = scrollBehavior,
+                navigationAction = { navController.navigateUp() }
             )
         }
     ) { innerPadding ->
@@ -76,9 +83,9 @@ fun WeatherForCityScreen(
             Content(
                 weather = weatherState.data!!,
                 forecasts = forecasts ?: emptyList(),
+                lazyListState = listState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
             )
         }
@@ -90,31 +97,54 @@ fun WeatherForCityScreen(
 private fun Content(
     weather: Weather,
     forecasts: List<Forecast>,
-    modifier: Modifier
+    modifier: Modifier,
+    lazyListState: LazyListState
 ) {
-    Column(
-        modifier = modifier
+    LazyColumn(
+        modifier = modifier,
+        state = lazyListState
     ) {
-        MainInfo(
-            weather = weather,
-            modifier = Modifier.fillMaxWidth()
-        )
+        item("city_name") {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text(
+                    text = weather.cityName,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        item("main_info") {
+            MainInfo(
+                weather = weather,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
-        AdditionalInfo(
-            feelsLike = weather.tempFeelsLike.uiValue,
-            visibilityInMeters = weather.visibilityInMeters,
-            rainInPercent = forecasts.getOrNull(0)?.precipitationInPercentage,
-            modifier = Modifier
-                .fillMaxWidth()
-                .animateContentSize()
-                .padding(horizontal = 16.dp)
-        )
+        item("additional_info") {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+            AdditionalInfo(
+                feelsLike = weather.tempFeelsLike.uiValue,
+                visibilityInMeters = weather.visibilityInMeters,
+                rainInPercent = forecasts.getOrNull(0)?.precipitationInPercentage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize()
+                    .padding(horizontal = 16.dp)
+            )
+        }
 
-        HourlyForecast(forecasts)
+        item("hourly_forecast") {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HourlyForecast(forecasts)
+        }
     }
 }
 

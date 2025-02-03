@@ -51,14 +51,6 @@ fun MainInfo(
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = weather.cityName,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
-        )
         AsyncImage(
             model = weather.icon.url,
             contentDescription = null,
