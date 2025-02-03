@@ -13,7 +13,6 @@ import javax.inject.Singleton
 @Singleton
 class ForecastRepository @Inject constructor(private val service: OpenWeatherService) {
 
-    //TODO: error handling
     suspend fun loadForecastForCity(cityId: Int): List<Forecast> = try {
         service.getForecast(cityId).await().list.map { it.asExternalModel() }
     } catch (e: Exception) {

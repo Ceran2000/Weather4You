@@ -16,7 +16,7 @@ class CityRepository @Inject constructor(private val service: OpenWeatherService
             service.getCities(cityName).await().list.map { it.asExternalModel() }
         } catch (e: Exception) {
             Log.e(TAG, "Error when fetching cities for $cityName", e)
-            emptyList() //TODO: throw e, then map to emptylist?
+            throw e
         }
     }
 

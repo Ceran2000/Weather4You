@@ -11,7 +11,6 @@ import javax.inject.Singleton
 @Singleton
 class WeatherRepository @Inject constructor(private val service: OpenWeatherService) {
 
-    //TODO: error handling
     suspend fun loadCurrentWeatherForCity(id: Int): Weather = try {
         service.getWeather(id).await().asExternalModel()
     } catch (e: Exception) {

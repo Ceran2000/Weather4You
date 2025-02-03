@@ -175,7 +175,7 @@ private fun SearchResultsList(
         LazyColumn {
             items(cities, key = { it.id }) { city ->
                 SearchResultItem(
-                    text = "${city.name}, ${city.country}",
+                    city = city,
                     onItemClicked = { onCityClicked(city) }
                 )
             }
@@ -185,11 +185,12 @@ private fun SearchResultsList(
 
 @Composable
 private fun SearchResultItem(
-    text: String,
+    city: City,
     onItemClicked: () -> Unit
 ) {
     ListItem(
-        title = text,
+        title = city.title,
+        subTitle = city.subTitle,
         leadingIcon = Icons.Default.LocationOn,
         trailingIcon = Icons.Default.ChevronRight,
         onItemClicked = onItemClicked
@@ -263,6 +264,59 @@ private fun ListItem(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
+
+        if (trailingIcon != null) {
+            Icon(
+                imageVector = trailingIcon,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 16.dp)
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun ListItem(
+    title: String,
+    subTitle: String,
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
+    onItemClicked: (() -> Unit)? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .clickable(enabled = onItemClicked != null) { onItemClicked!!.invoke() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (leadingIcon != null) {
+            Icon(
+                imageVector = leadingIcon,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f, true)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = subTitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+
 
         if (trailingIcon != null) {
             Icon(
