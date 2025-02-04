@@ -1,7 +1,6 @@
 package pl.ceranka.weather4you.ui.search_city
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ChevronRight
@@ -21,11 +19,12 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -57,6 +56,11 @@ fun SearchCityScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val recentCities by viewModel.recentCities.collectAsStateWithLifecycle()
 
+    val onCityClicked: (City) -> Unit = {
+        viewModel.onCityItemClicked(it)
+        navController.navigate(WeatherForCity(it.id))
+    }
+
     AppTheme {
         Scaffold(
             topBar = {
@@ -86,10 +90,7 @@ fun SearchCityScreen(
                     SearchResultsList(
                         modifier = Modifier.fillMaxWidth(),
                         cities = uiState.data ?: emptyList(),
-                        onCityClicked = {
-                            viewModel.onCityItemClicked(it)     //TODO: test delay
-                            navController.navigate(WeatherForCity(it.id))
-                        }
+                        onItemClicked = onCityClicked
                     )
                 }
 
@@ -97,7 +98,9 @@ fun SearchCityScreen(
                     RecentCitiesList(
                         modifier = Modifier
                             .weight(1f, fill = false),
-                        cities = recentCities.map { it.title }      //TODO
+                        cities = recentCities,
+                        onItemClicked = onCityClicked,
+                        onRemoveClicked = viewModel::onRemoveRecentCityClicked
                     )
                 }
 
@@ -174,7 +177,7 @@ private fun SearchInputField(
 private fun SearchResultsList(
     modifier: Modifier,
     cities: List<City>,
-    onCityClicked: (City) -> Unit
+    onItemClicked: (City) -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -184,7 +187,7 @@ private fun SearchResultsList(
             items(cities, key = { it.id }) { city ->
                 SearchResultItem(
                     city = city,
-                    onItemClicked = { onCityClicked(city) }
+                    onItemClicked = { onItemClicked(city) }
                 )
             }
         }
@@ -201,15 +204,17 @@ private fun SearchResultItem(
         subTitle = city.subTitle,
         leadingIcon = Icons.Default.LocationOn,
         trailingIcon = Icons.Default.ChevronRight,
-        onItemClicked = onItemClicked
+        onItemClicked = onItemClicked,
+        onTrailingIconClicked = onItemClicked
     )
 }
 
 @Composable
 private fun RecentCitiesList(
     modifier: Modifier,
-    cities: List<String>,
-    onRemoveClick: () -> Unit = {}
+    cities: List<City>,
+    onItemClicked: (City) -> Unit,
+    onRemoveClicked: (City) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -225,8 +230,8 @@ private fun RecentCitiesList(
             modifier = Modifier.fillMaxWidth()
         ) {
             LazyColumn {
-                itemsIndexed(cities, key = { index, _ -> index }) { index, item ->
-                    RecentItem(item)
+                items(cities, key = { it.id }) { city ->
+                    RecentItem(city, onItemClicked, onRemoveClicked)
                 }
             }
         }
@@ -234,78 +239,44 @@ private fun RecentCitiesList(
 }
 
 @Composable
-private fun RecentItem(text: String) {
+private fun RecentItem(
+    city: City,
+    onItemClicked: (City) -> Unit,
+    onRemoveClicked: (City) -> Unit
+) {
     ListItem(
-        title = text,
+        title = city.title,
+        subTitle = city.subTitle,
         leadingIcon = Icons.Default.AccessTime,
-        trailingIcon = Icons.Default.Close
+        trailingIcon = Icons.Default.Close,
+        onItemClicked = { onItemClicked(city) },
+        onTrailingIconClicked = { onRemoveClicked(city) }
     )
 }
 
 @Composable
 private fun ListItem(
     title: String,
-    leadingIcon: ImageVector? = null,
-    trailingIcon: ImageVector? = null,
-    onItemClicked: (() -> Unit)? = null
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .clickable(enabled = onItemClicked != null) { onItemClicked!!.invoke() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (leadingIcon != null) {
-            Icon(
-                imageVector = leadingIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
-
-        Text(
-            text = title,
-            modifier = Modifier
-                .weight(1f, true)
-                .padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        if (trailingIcon != null) {
-            Icon(
-                imageVector = trailingIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 16.dp)
-            )
-        }
-
-    }
-}
-
-@Composable
-private fun ListItem(
-    title: String,
     subTitle: String,
-    leadingIcon: ImageVector? = null,
+    leadingIcon: ImageVector,
     trailingIcon: ImageVector? = null,
-    onItemClicked: (() -> Unit)? = null
+    onItemClicked: () -> Unit,
+    onTrailingIconClicked: (() -> Unit)? = null
 ) {
+    val showTrailingIcon = trailingIcon != null
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
-            .clickable(enabled = onItemClicked != null) { onItemClicked!!.invoke() },
+            .clickable(onClick = onItemClicked),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (leadingIcon != null) {
-            Icon(
-                imageVector = leadingIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        Icon(
+            imageVector = leadingIcon,
+            contentDescription = null,
+            modifier = Modifier.padding(start = 16.dp)
+        )
 
         Column(
             modifier = Modifier
@@ -324,14 +295,17 @@ private fun ListItem(
             )
         }
 
-
-
-        if (trailingIcon != null) {
-            Icon(
-                imageVector = trailingIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 16.dp)
-            )
+        if (showTrailingIcon) {
+            IconButton(
+                onClick = { onTrailingIconClicked?.invoke() },
+                colors = IconButtonDefaults.iconButtonColors(disabledContentColor = LocalContentColor.current),
+                modifier = Modifier.padding(end = 4.dp)
+            ) {
+                Icon(
+                    imageVector = trailingIcon!!,
+                    contentDescription = null
+                )
+            }
         }
 
     }
