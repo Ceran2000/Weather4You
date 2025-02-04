@@ -2,10 +2,8 @@ package pl.ceranka.weather4you.data.repository
 
 import android.util.Log
 import pl.ceranka.weather4you.data.model.forecast.Forecast
-import pl.ceranka.weather4you.data.remote.model.forecast.ForecastResponse
-import pl.ceranka.weather4you.data.remote.OpenWeatherService
+import pl.ceranka.weather4you.data.remote.api.OpenWeatherService
 import pl.ceranka.weather4you.data.remote.model.forecast.asExternalModel
-import pl.ceranka.weather4you.data.repository.CityRepository.Companion
 import retrofit2.await
 import javax.inject.Inject
 import javax.inject.Singleton

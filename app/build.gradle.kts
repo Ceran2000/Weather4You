@@ -77,11 +77,17 @@ dependencies {
     //Coil
     implementation("io.coil-kt.coil3:coil-compose:3.0.4")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
-
+    //Hilt
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
+    //Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    //Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    //implementation("androidx.room:room-coroutines:2.1.0-alpha04")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

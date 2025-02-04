@@ -1,4 +1,4 @@
-package pl.ceranka.weather4you.data.remote
+package pl.ceranka.weather4you.data.remote.api
 
 import dagger.Module
 import dagger.Provides

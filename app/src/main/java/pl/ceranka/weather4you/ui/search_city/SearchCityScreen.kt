@@ -55,6 +55,7 @@ fun SearchCityScreen(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val showSearchQueryError by viewModel.showSearchQueryError.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val recentCities by viewModel.recentCities.collectAsStateWithLifecycle()
 
     AppTheme {
         Scaffold(
@@ -85,7 +86,10 @@ fun SearchCityScreen(
                     SearchResultsList(
                         modifier = Modifier.fillMaxWidth(),
                         cities = uiState.data ?: emptyList(),
-                        onCityClicked = { navController.navigate(WeatherForCity(it.id)) }
+                        onCityClicked = {
+                            viewModel.onCityItemClicked(it)     //TODO: test delay
+                            navController.navigate(WeatherForCity(it.id))
+                        }
                     )
                 }
 
@@ -93,7 +97,7 @@ fun SearchCityScreen(
                     RecentCitiesList(
                         modifier = Modifier
                             .weight(1f, fill = false),
-                        cities = recentCities
+                        cities = recentCities.map { it.title }      //TODO
                     )
                 }
 
@@ -332,15 +336,3 @@ private fun ListItem(
 
     }
 }
-
-private val recentCities: List<String> = listOf(
-    "New York, United States",
-    "Łódź, Poland",
-    "Warszawa, Poland",
-    "New York, United States",
-    "Łódź, Poland",
-    "Warszawa, Poland",
-    "New York, United States",
-    "Łódź, Poland",
-    "Warszawa, Poland"
-)

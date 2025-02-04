@@ -1,4 +1,4 @@
-package pl.ceranka.weather4you.data.remote
+package pl.ceranka.weather4you.data.remote.api
 
 import pl.ceranka.weather4you.BuildConfig
 import pl.ceranka.weather4you.data.remote.model.city.CityResponse

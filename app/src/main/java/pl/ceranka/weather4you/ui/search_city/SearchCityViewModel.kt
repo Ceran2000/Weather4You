@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import pl.ceranka.weather4you.data.model.city.City
 import pl.ceranka.weather4you.data.repository.CityRepository
 import javax.inject.Inject
@@ -59,10 +60,33 @@ class SearchCityViewModel @Inject constructor(
     private suspend fun searchCities(cityName: String) {
         try {
             _uiState.value = UiState.Loading
-            val cities = cityRepository.loadCities(cityName)
+            val cities = cityRepository.searchCities(cityName)
             _uiState.value = if (cities.isEmpty()) UiState.Empty else UiState.ShowContent(cities)
         } catch (e: Exception) {
             UiState.Error("Unknown error")
+        }
+    }
+
+    val recentCities: StateFlow<List<City>> by lazy {
+        cityRepository.citiesHistory(limit = 5)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    }
+
+    fun onCityItemClicked(city: City) {
+        viewModelScope.launch {
+            cityRepository.addCityToHistory(city)
+        }
+    }
+
+    fun onRemoveRecentCityClicked(city: City) {
+        viewModelScope.launch {
+            cityRepository.deleteCityFromHistory(city.id)
+        }
+    }
+
+    fun onClearHistoryClicked() {
+        viewModelScope.launch {
+            cityRepository.clearHistory()
         }
     }
 

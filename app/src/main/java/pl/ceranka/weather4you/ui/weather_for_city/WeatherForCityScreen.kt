@@ -82,7 +82,7 @@ fun WeatherForCityScreen(
         if (weatherState.showContent) {
             Content(
                 weather = weatherState.data!!,
-                forecasts = forecasts ?: emptyList(),
+                forecasts = forecasts.orEmpty(),
                 lazyListState = listState,
                 modifier = Modifier
                     .fillMaxWidth()

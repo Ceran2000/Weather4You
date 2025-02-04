@@ -1,27 +1,23 @@
 package pl.ceranka.weather4you.data.repository
 
-import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import pl.ceranka.weather4you.data.local.repository.CityLocalRepository
 import pl.ceranka.weather4you.data.model.city.City
-import pl.ceranka.weather4you.data.remote.OpenWeatherService
-import pl.ceranka.weather4you.data.remote.model.city.asExternalModel
-import retrofit2.await
+import pl.ceranka.weather4you.data.remote.repository.CityRemoteRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CityRepository @Inject constructor(private val service: OpenWeatherService) {
+class CityRepository @Inject constructor(private val localRepository: CityLocalRepository, private val remoteRepository: CityRemoteRepository) {
 
-    suspend fun loadCities(cityName: String): List<City> {
-        return try {
-            service.getCities(cityName).await().list.map { it.asExternalModel() }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error when fetching cities for $cityName", e)
-            throw e
-        }
-    }
+    suspend fun searchCities(cityNameQuery: String): List<City> =
+        remoteRepository.loadCities(cityName = cityNameQuery)
 
-    companion object {
-        private const val TAG = "CityRepository"
-    }
+    fun citiesHistory(limit: Int): Flow<List<City>> = localRepository.recentCities(limit)
 
+    suspend fun addCityToHistory(city: City) = localRepository.addCity(city)
+
+    suspend fun deleteCityFromHistory(id: Int) = localRepository.deleteCity(id)
+
+    suspend fun clearHistory() = localRepository.clearCities()
 }
