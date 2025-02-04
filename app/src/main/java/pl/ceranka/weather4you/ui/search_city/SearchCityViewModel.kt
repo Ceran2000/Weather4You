@@ -87,14 +87,7 @@ class SearchCityViewModel @Inject constructor(
         }
     }
 
-    fun onClearHistoryClicked() {
-        viewModelScope.launch {
-            cityRepository.clearHistory()
-        }
-    }
-
     init {
-        //TODO: test
         searchQuery
             .debounce(300)
             .onEach { query -> handleCitySearchQuery(query) }

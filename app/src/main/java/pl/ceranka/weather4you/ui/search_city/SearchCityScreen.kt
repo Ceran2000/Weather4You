@@ -96,8 +96,7 @@ fun SearchCityScreen(
 
                 AnimatedVisibility(visible = uiState.showInitial) {
                     RecentCitiesList(
-                        modifier = Modifier
-                            .weight(1f, fill = false),
+                        modifier = Modifier.fillMaxWidth(),
                         cities = recentCities,
                         onItemClicked = onCityClicked,
                         onRemoveClicked = viewModel::onRemoveRecentCityClicked
@@ -164,7 +163,7 @@ private fun SearchInputField(
         },
         supportingText = {
             if (showError) {
-                Text("Nazwa niepoprawna!", color = MaterialTheme.colorScheme.error)
+                Text("Nazwa niepoprawna", color = MaterialTheme.colorScheme.error)
             }
         },
         singleLine = true,
@@ -179,16 +178,24 @@ private fun SearchResultsList(
     cities: List<City>,
     onItemClicked: (City) -> Unit
 ) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        LazyColumn {
-            items(cities, key = { it.id }) { city ->
-                SearchResultItem(
-                    city = city,
-                    onItemClicked = { onItemClicked(city) }
-                )
+    Column(modifier) {
+        Text(
+            text = "Wyniki wyszukiwania",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            LazyColumn {
+                items(cities, key = { it.id }) { city ->
+                    SearchResultItem(
+                        city = city,
+                        onItemClicked = { onItemClicked(city) }
+                    )
+                }
             }
         }
     }
