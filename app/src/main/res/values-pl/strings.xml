@@ -1,0 +1,24 @@
+<resources>
+    <!-- [Shared] -->
+    <string name="app_name">Weather4You</string>
+    <string name="unknown_error_message">Coś poszło nie tak. Spróbuj ponownie później.</string>
+    <!-- [/Shared] -->
+
+    <!-- [SearchCity]   -->
+    <string name="search_city_search_results_title">Wyniki wyszukiwania</string>
+    <string name="search_city_recent_cities_title">Ostatnie miasta</string>
+    <string name="search_city_empty_state_message">Brak wyników</string>
+    <string name="search_city_search_input_field_label">Wyszukaj miasto</string>
+    <string name="search_city_search_input_field_error_message">Nieprawidłowa nazwa miasta</string>
+    <!-- [/SearchCity]   -->
+
+    <!-- [WeatherForCity] -->
+    <string name="weather_for_city_humidity_label">Wilgotność</string>
+    <string name="weather_for_city_cloudiness_label">Zachmurzenie</string>
+    <string name="weather_for_city_additional_information_title">Dodatkowe informacje</string>
+    <string name="weather_for_city_feels_like_label">Temperatura odczuwalna</string>
+    <string name="weather_for_city_visibility_label">Widoczność</string>
+    <string name="weather_for_city_precipitation_label">Opady</string>
+    <string name="weather_for_city_hourly_forecast_title">Prognoza godzinowa</string>
+    <!-- [/WeatherForCity] -->
+</resources>

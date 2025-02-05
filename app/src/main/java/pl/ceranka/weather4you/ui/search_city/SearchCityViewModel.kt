@@ -18,8 +18,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.data.model.city.City
 import pl.ceranka.weather4you.data.repository.CityRepository
+import pl.ceranka.weather4you.ui.util.getString
 import javax.inject.Inject
 
 @Suppress("OPT_IN_USAGE")
@@ -29,7 +31,7 @@ class SearchCityViewModel @Inject constructor(
     private val cityRepository: CityRepository
 ) : AndroidViewModel(application) {
 
-    private val _uiState = MutableStateFlow<UiState<List<City>>>(UiState.Initial)
+    private val _uiState = MutableStateFlow<UiState<List<City>>>(UiState.ShowHistory)
     val uiState = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -55,7 +57,7 @@ class SearchCityViewModel @Inject constructor(
 
     private suspend fun handleCitySearchQuery(cityName: String) {
         when {
-            cityName.isEmpty() -> _uiState.emit(UiState.Initial)
+            cityName.isEmpty() -> _uiState.emit(UiState.ShowHistory)
             !cityName.matches(searchQueryRegex) -> _uiState.emit(UiState.Empty)
             else -> searchCities(cityName)
         }
@@ -63,11 +65,11 @@ class SearchCityViewModel @Inject constructor(
 
     private suspend fun searchCities(cityName: String) = flow {
         val cities = cityRepository.searchCities(cityName)
-        val state = if (cities.isEmpty()) UiState.Empty else UiState.ShowContent(cities)
+        val state = if (cities.isEmpty()) UiState.Empty else UiState.ShowResults(cities)
         emit(state)
     }
         .onStart { emit(UiState.Loading) }
-        .catch { emit(UiState.Error("Unknown error")) }
+        .catch { emit(UiState.Error(getString(R.string.unknown_error_message))) }       //TODO :test
         .run { _uiState.emitAll(this) }
 
     val recentCities: StateFlow<List<City>> by lazy {

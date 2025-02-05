@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -26,8 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,18 +77,16 @@ fun MainInfo(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            //Humidity
             InfoBox(
                 iconResId = R.drawable.ic_humidity,
-                name = "Humidity",
+                name = stringResource(R.string.weather_for_city_humidity_label),
                 value = "${weather.humidity} %",
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            //Cloudiness (clouds)
             InfoBox(
                 iconResId = R.drawable.ic_cloudiness,
-                name = "Cloudiness",
+                name = stringResource(R.string.weather_for_city_cloudiness_label),
                 value = "${weather.cloudinessInPercentage} %",
                 modifier = Modifier.weight(1f)
             )
@@ -113,27 +108,27 @@ fun AdditionalInfo(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Additional Information",
+                text = stringResource(R.string.weather_for_city_additional_information_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             AdditionalInfoRow(
                 iconResId = R.drawable.ic_temp_feels_like,
-                title = "Feels like",
+                title = stringResource(R.string.weather_for_city_feels_like_label),
                 value = feelsLike
             )
             Spacer(modifier = Modifier.height(8.dp))
             AdditionalInfoRow(
                 iconResId = R.drawable.ic_visibility,
-                title = "Visibility",
+                title = stringResource(R.string.weather_for_city_visibility_label),
                 value = "$visibilityInMeters m"
             )
             if (rainInPercent != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 AdditionalInfoRow(
                     iconResId = R.drawable.ic_precipitation,
-                    title = "Precipitation",
+                    title = stringResource(R.string.weather_for_city_precipitation_label),
                     value = "$rainInPercent %"
                 )
             }
@@ -152,7 +147,7 @@ fun HourlyForecast(forecasts: List<Forecast>) {
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = "Hourly Forecast",
+                text = stringResource(R.string.weather_for_city_hourly_forecast_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(16.dp)

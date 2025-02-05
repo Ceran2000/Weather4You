@@ -1,3 +1,24 @@
 <resources>
+    <!-- [Shared] -->
     <string name="app_name">Weather4You</string>
+    <string name="unknown_error_message">Something went wrong. Please try again later.</string>
+    <!-- [/Shared] -->
+
+    <!-- [SearchCity]   -->
+    <string name="search_city_search_results_title">Search Results</string>
+    <string name="search_city_recent_cities_title">Recent Cities</string>
+    <string name="search_city_empty_state_message">No results</string>
+    <string name="search_city_search_input_field_label">Search city</string>
+    <string name="search_city_search_input_field_error_message">Invalid city name</string>
+    <!-- [/SearchCity]   -->
+
+    <!-- [WeatherForCity] -->
+    <string name="weather_for_city_humidity_label">Humidity</string>
+    <string name="weather_for_city_cloudiness_label">Cloudiness</string>
+    <string name="weather_for_city_additional_information_title">Additional information</string>
+    <string name="weather_for_city_feels_like_label">Feels Like</string>
+    <string name="weather_for_city_visibility_label">Visibility</string>
+    <string name="weather_for_city_precipitation_label">Precipitation</string>
+    <string name="weather_for_city_hourly_forecast_title">Hourly Forecast</string>
+    <!-- [/WeatherForCity] -->
 </resources>
