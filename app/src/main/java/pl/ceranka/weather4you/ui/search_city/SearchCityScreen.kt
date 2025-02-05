@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -148,7 +149,8 @@ private fun SearchInputField(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
             )
         },
         trailingIcon = {
@@ -157,7 +159,8 @@ private fun SearchInputField(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         },
@@ -282,7 +285,7 @@ private fun ListItem(
         Icon(
             imageVector = leadingIcon,
             contentDescription = null,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp).size(24.dp)
         )
 
         Column(

@@ -1,5 +1,6 @@
 package pl.ceranka.weather4you.ui.weather_for_city
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,11 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Adb
-import androidx.compose.material.icons.filled.AddLocation
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,12 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.data.model.Temperature
 import pl.ceranka.weather4you.data.model.forecast.Forecast
 import pl.ceranka.weather4you.data.model.weather.Weather
@@ -83,7 +82,7 @@ fun MainInfo(
         ) {
             //Humidity
             InfoBox(
-                icon = Icons.Default.LocationOn,
+                iconResId = R.drawable.ic_humidity,
                 name = "Humidity",
                 value = "${weather.humidity} %",
                 modifier = Modifier.weight(1f)
@@ -91,7 +90,7 @@ fun MainInfo(
             Spacer(modifier = Modifier.width(16.dp))
             //Cloudiness (clouds)
             InfoBox(
-                icon = Icons.Default.AddLocation,
+                iconResId = R.drawable.ic_cloudiness,
                 name = "Cloudiness",
                 value = "${weather.cloudinessInPercentage} %",
                 modifier = Modifier.weight(1f)
@@ -120,20 +119,20 @@ fun AdditionalInfo(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             AdditionalInfoRow(
-                icon = Icons.Default.AccessTime,
+                iconResId = R.drawable.ic_temp_feels_like,
                 title = "Feels like",
                 value = feelsLike
             )
             Spacer(modifier = Modifier.height(8.dp))
             AdditionalInfoRow(
-                icon = Icons.Default.AccountBalance,
+                iconResId = R.drawable.ic_visibility,
                 title = "Visibility",
                 value = "$visibilityInMeters m"
             )
             if (rainInPercent != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 AdditionalInfoRow(
-                    icon = Icons.Default.Adb,
+                    iconResId = R.drawable.ic_precipitation,
                     title = "Precipitation",
                     value = "$rainInPercent %"
                 )
@@ -177,7 +176,7 @@ fun HourlyForecast(forecasts: List<Forecast>) {
 
 @Composable
 private fun AdditionalInfoRow(
-    icon: ImageVector,
+    @DrawableRes iconResId: Int,
     title: String,
     value: String
 ) {
@@ -186,8 +185,9 @@ private fun AdditionalInfoRow(
         modifier = Modifier.fillMaxWidth()
     ) {
         Icon(
-            imageVector = icon,
-            contentDescription = null
+            painter = painterResource(iconResId),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
         )
         Text(
             text = title,
@@ -208,7 +208,7 @@ private fun AdditionalInfoRow(
 
 @Composable
 private fun InfoBox(
-    icon: ImageVector,
+    @DrawableRes iconResId: Int,
     name: String,
     value: String,
     modifier: Modifier
@@ -222,7 +222,11 @@ private fun InfoBox(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = icon, contentDescription = null)
+                Icon(
+                    painter = painterResource(iconResId),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
                 Text(
                     text = name,
                     style = MaterialTheme.typography.bodyMedium,
