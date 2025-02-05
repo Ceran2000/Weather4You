@@ -22,7 +22,9 @@ import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.data.model.city.City
 import pl.ceranka.weather4you.data.repository.CityRepository
 import pl.ceranka.weather4you.ui.util.getString
+import pl.ceranka.weather4you.ui.util.showToast
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @Suppress("OPT_IN_USAGE")
 @HiltViewModel
@@ -69,23 +71,39 @@ class SearchCityViewModel @Inject constructor(
         emit(state)
     }
         .onStart { emit(UiState.Loading) }
-        .catch { emit(UiState.Error(getString(R.string.unknown_error_message))) }       //TODO :test
+        .catch {
+            val errorState = UiState.Error(getString(R.string.unknown_error_message))
+            emit(errorState)
+        }
         .run { _uiState.emitAll(this) }
 
     val recentCities: StateFlow<List<City>> by lazy {
         cityRepository.citiesHistory(limit = 5)
+            .catch { emit(emptyList()) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     }
 
     fun onCityItemClicked(city: City) {
         viewModelScope.launch {
-            cityRepository.addCityToHistory(city)
+            try {
+                cityRepository.addCityToHistory(city)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                showToast(getString(R.string.unknown_error_message))
+            }
         }
     }
 
     fun onRemoveRecentCityClicked(city: City) {
         viewModelScope.launch {
-            cityRepository.deleteCityFromHistory(city.id)
+            try {
+                cityRepository.deleteCityFromHistory(city.id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                showToast(getString(R.string.unknown_error_message))
+            }
         }
     }
 

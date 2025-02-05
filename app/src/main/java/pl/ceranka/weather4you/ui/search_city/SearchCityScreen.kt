@@ -80,7 +80,7 @@ fun SearchCityScreen(
                     )
                 }
 
-                AnimatedVisibility(visible = uiState.showHistory) {
+                AnimatedVisibility(visible = uiState.showHistory && recentCities.isNotEmpty()) {
                     RecentCitiesList(
                         modifier = Modifier.fillMaxWidth(),
                         cities = recentCities,

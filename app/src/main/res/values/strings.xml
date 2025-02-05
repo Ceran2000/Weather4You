@@ -20,5 +20,6 @@
     <string name="weather_for_city_visibility_label">Visibility</string>
     <string name="weather_for_city_precipitation_label">Precipitation</string>
     <string name="weather_for_city_hourly_forecast_title">Hourly Forecast</string>
+    <string name="weather_for_city_refersh_button">Refresh</string>
     <!-- [/WeatherForCity] -->
 </resources>

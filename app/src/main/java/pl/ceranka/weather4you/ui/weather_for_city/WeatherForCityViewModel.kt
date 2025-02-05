@@ -8,11 +8,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.data.model.forecast.Forecast
 import pl.ceranka.weather4you.data.model.weather.Weather
 import pl.ceranka.weather4you.data.repository.ForecastRepository
 import pl.ceranka.weather4you.data.repository.WeatherRepository
+import pl.ceranka.weather4you.ui.util.getString
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,21 +40,27 @@ class WeatherForCityViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadWeather() {
-        try {
-            _weatherUiState.emit(UiState.Loading)
-            val weather = weatherRepository.loadCurrentWeatherForCity(cityId)
-            _weatherUiState.emit(UiState.ShowContent(weather))
-        } catch (e: Exception) {
-            _weatherUiState.emit(UiState.Error("Unknown error"))
-        }
+    private suspend fun loadWeather() = flow<UiState<Weather>> {
+        val weather = weatherRepository.loadCurrentWeatherForCity(cityId)
+        emit(UiState.ShowContent(weather))
     }
+        .onStart { emit(UiState.Loading) }
+        .catch {
+            val errorState = UiState.Error(getString(R.string.unknown_error_message))
+            emit(errorState)
+        }
+        .run { _weatherUiState.emitAll(this) }
 
     private val _forecasts = MutableStateFlow<List<Forecast>?>(null)
     val forecasts = _forecasts.asStateFlow()
 
     private suspend fun loadForecasts() {
-        _forecasts.value = forecastRepository.loadForecastForCity(cityId)
+        val data = try {
+            forecastRepository.loadForecastForCity(cityId)
+        } catch (e: Exception) {
+            null
+        }
+        _forecasts.value = data
     }
 
     init {
