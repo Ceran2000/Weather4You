@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import pl.ceranka.weather4you.R
-import pl.ceranka.weather4you.data.model.forecast.Forecast
-import pl.ceranka.weather4you.data.model.weather.Weather
-import pl.ceranka.weather4you.data.repository.ForecastRepository
-import pl.ceranka.weather4you.data.repository.WeatherRepository
+import pl.ceranka.weather4you.domain.model.forecast.Forecast
+import pl.ceranka.weather4you.domain.model.weather.Weather
+import pl.ceranka.weather4you.domain.repository.ForecastRepository
+import pl.ceranka.weather4you.domain.repository.WeatherRepository
 import pl.ceranka.weather4you.ui.util.getString
 import javax.inject.Inject
 

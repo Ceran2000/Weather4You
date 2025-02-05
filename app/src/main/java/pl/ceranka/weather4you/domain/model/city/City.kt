@@ -1,4 +1,4 @@
-package pl.ceranka.weather4you.data.model.city
+package pl.ceranka.weather4you.domain.model.city
 
 import pl.ceranka.weather4you.data.local.model.CityEntity
 import pl.ceranka.weather4you.data.local.model.CoordEntity

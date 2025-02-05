@@ -1,7 +1,7 @@
-package pl.ceranka.weather4you.data.model.weather
+package pl.ceranka.weather4you.domain.model.weather
 
-import pl.ceranka.weather4you.data.model.Icon
-import pl.ceranka.weather4you.data.model.Temperature
+import pl.ceranka.weather4you.domain.model.Icon
+import pl.ceranka.weather4you.domain.model.Temperature
 
 data class Weather(
     val cityName: String,

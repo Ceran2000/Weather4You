@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import pl.ceranka.weather4you.R
-import pl.ceranka.weather4you.data.model.Temperature
-import pl.ceranka.weather4you.data.model.forecast.Forecast
-import pl.ceranka.weather4you.data.model.weather.Weather
+import pl.ceranka.weather4you.domain.model.Temperature
+import pl.ceranka.weather4you.domain.model.forecast.Forecast
+import pl.ceranka.weather4you.domain.model.weather.Weather
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

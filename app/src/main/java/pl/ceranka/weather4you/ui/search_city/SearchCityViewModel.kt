@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.ceranka.weather4you.R
-import pl.ceranka.weather4you.data.model.city.City
-import pl.ceranka.weather4you.data.repository.CityRepository
+import pl.ceranka.weather4you.domain.model.city.City
+import pl.ceranka.weather4you.domain.repository.CityRepository
 import pl.ceranka.weather4you.ui.util.getString
 import pl.ceranka.weather4you.ui.util.showToast
 import javax.inject.Inject

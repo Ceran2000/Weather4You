@@ -1,11 +1,8 @@
 package pl.ceranka.weather4you.data.remote.model.weather
 
-import pl.ceranka.weather4you.data.model.Icon
-import pl.ceranka.weather4you.data.model.Temperature
-import pl.ceranka.weather4you.data.model.weather.Weather as WeatherExternalModel
-import pl.ceranka.weather4you.data.remote.model.forecast.Sys
-import pl.ceranka.weather4you.data.remote.model.forecast.Weather
-import pl.ceranka.weather4you.data.remote.model.forecast.Wind
+import pl.ceranka.weather4you.domain.model.Icon
+import pl.ceranka.weather4you.domain.model.Temperature
+import pl.ceranka.weather4you.domain.model.weather.Weather as WeatherDomainModel
 import kotlin.math.roundToInt
 
 data class WeatherResponse(
@@ -44,6 +41,14 @@ data class Main(
     val temp_min: Double
 )
 
+data class Sys(
+    val country: String,
+    val id: Int,
+    val sunrise: Int,
+    val sunset: Int,
+    val type: Int
+)
+
 data class Weather(
     val description: String,
     val icon: String,
@@ -57,10 +62,10 @@ data class Wind(
     val speed: Double
 )
 
-fun WeatherResponse.asExternalModel(): WeatherExternalModel {
+fun WeatherResponse.asDomain(): WeatherDomainModel {
     val weather = weather.first()   //TODO
 
-    return WeatherExternalModel(
+    return WeatherDomainModel(
         cityName = name,
         description = weather.description,
         icon = Icon(weather.icon),

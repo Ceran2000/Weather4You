@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pl.ceranka.weather4you.R
-import pl.ceranka.weather4you.data.model.city.City
+import pl.ceranka.weather4you.domain.model.city.City
 
 @Composable
 fun SearchInputField(

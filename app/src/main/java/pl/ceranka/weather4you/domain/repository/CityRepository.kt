@@ -1,8 +1,8 @@
-package pl.ceranka.weather4you.data.repository
+package pl.ceranka.weather4you.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import pl.ceranka.weather4you.data.local.repository.CityLocalRepository
-import pl.ceranka.weather4you.data.model.city.City
+import pl.ceranka.weather4you.domain.model.city.City
 import pl.ceranka.weather4you.data.remote.repository.CityRemoteRepository
 import javax.inject.Inject
 import javax.inject.Singleton

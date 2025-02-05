@@ -1,4 +1,4 @@
-package pl.ceranka.weather4you.data.model
+package pl.ceranka.weather4you.domain.model
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,7 +1,7 @@
 package pl.ceranka.weather4you.data.remote.model.city
 
-import pl.ceranka.weather4you.data.model.city.City as CityExternalModel
-import pl.ceranka.weather4you.data.model.city.Coord as CoordExternalModel
+import pl.ceranka.weather4you.domain.model.city.City as CityDomainModel
+import pl.ceranka.weather4you.domain.model.city.Coord as CoordDomainModel
 
 data class CityResponse(
     val cod: String,
@@ -31,4 +31,4 @@ data class Sys(
     val type: Int
 )
 
-fun City.asExternalModel() = CityExternalModel(id = id, name = name, country = sys.country, coord = CoordExternalModel(coord.lat, coord.lon))
+fun City.asDomain() = CityDomainModel(id = id, name = name, country = sys.country, coord = CoordDomainModel(coord.lat, coord.lon))

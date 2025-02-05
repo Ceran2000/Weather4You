@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import pl.ceranka.weather4you.R
-import pl.ceranka.weather4you.data.model.city.City
+import pl.ceranka.weather4you.domain.model.city.City
 import pl.ceranka.weather4you.navigation.WeatherForCity
 import pl.ceranka.weather4you.ui.components.TopBar
 import pl.ceranka.weather4you.ui.theme.AppTheme
