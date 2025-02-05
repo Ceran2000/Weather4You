@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 data class Temperature(val value: Int) {
 
-    val uiValue: String by lazy { "$value*C" }
+    val uiValue: String by lazy { "$value°C" }      //TODO: units
 
     val color: Color by lazy {
         when {

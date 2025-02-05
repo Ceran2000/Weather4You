@@ -1,6 +1,5 @@
 package pl.ceranka.weather4you.ui.weather_for_city
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -108,7 +107,7 @@ private fun Content(
                 Text(
                     text = weather.cityName,
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -130,7 +129,6 @@ private fun Content(
                 rainInPercent = forecasts.getOrNull(0)?.precipitationInPercentage,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .animateContentSize()
                     .padding(horizontal = 16.dp)
             )
         }

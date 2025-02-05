@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -66,7 +68,7 @@ fun MainInfo(
         Text(
             text = weather.description,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .padding(top = 8.dp)
                 .align(Alignment.CenterHorizontally)
@@ -80,14 +82,14 @@ fun MainInfo(
             InfoBox(
                 iconResId = R.drawable.ic_humidity,
                 name = stringResource(R.string.weather_for_city_humidity_label),
-                value = "${weather.humidity} %",
+                value = "${weather.humidity}%",
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
             InfoBox(
                 iconResId = R.drawable.ic_cloudiness,
                 name = stringResource(R.string.weather_for_city_cloudiness_label),
-                value = "${weather.cloudinessInPercentage} %",
+                value = "${weather.cloudinessInPercentage}%",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -102,7 +104,8 @@ fun AdditionalInfo(
     modifier: Modifier
 ) {
     Card(
-        modifier = modifier
+        modifier = modifier,
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -110,7 +113,7 @@ fun AdditionalInfo(
             Text(
                 text = stringResource(R.string.weather_for_city_additional_information_title),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             AdditionalInfoRow(
@@ -122,14 +125,14 @@ fun AdditionalInfo(
             AdditionalInfoRow(
                 iconResId = R.drawable.ic_visibility,
                 title = stringResource(R.string.weather_for_city_visibility_label),
-                value = "$visibilityInMeters m"
+                value = "${visibilityInMeters}m"
             )
             if (rainInPercent != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 AdditionalInfoRow(
                     iconResId = R.drawable.ic_precipitation,
                     title = stringResource(R.string.weather_for_city_precipitation_label),
-                    value = "$rainInPercent %"
+                    value = "${rainInPercent}%"
                 )
             }
         }
@@ -144,12 +147,13 @@ fun HourlyForecast(forecasts: List<Forecast>) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
         ) {
             Text(
                 text = stringResource(R.string.weather_for_city_hourly_forecast_title),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(16.dp)
             )
             LazyRow(
@@ -187,7 +191,7 @@ private fun AdditionalInfoRow(
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp)
@@ -195,7 +199,7 @@ private fun AdditionalInfoRow(
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -209,7 +213,8 @@ private fun InfoBox(
     modifier: Modifier
 ) {
     Card(
-        modifier
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(
             modifier = Modifier.padding(8.dp)
@@ -225,7 +230,7 @@ private fun InfoBox(
                 Text(
                     text = name,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     maxLines = 2,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -233,7 +238,7 @@ private fun InfoBox(
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.padding(top = 8.dp)
@@ -252,8 +257,8 @@ private fun HourlyForecastItem(
     val day = remember { zonedDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
     val time = remember { zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm")) }
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -262,12 +267,12 @@ private fun HourlyForecastItem(
             Text(
                 text = time,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.onTertiaryContainer
             )
             Text(
                 text = day,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.onTertiaryContainer
             )
             AsyncImage(
                 model = iconUrl,
