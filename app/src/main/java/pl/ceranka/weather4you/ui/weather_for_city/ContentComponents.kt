@@ -19,10 +19,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -35,11 +33,6 @@ import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.Temperature
 import pl.ceranka.weather4you.domain.model.forecast.Forecast
 import pl.ceranka.weather4you.domain.model.weather.Weather
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun MainInfo(
@@ -163,7 +156,7 @@ fun HourlyForecast(forecasts: List<Forecast>) {
             ) {
                 items(items = forecasts) {forecast ->
                     HourlyForecastItem(
-                        dateTimeSecondsUTC = forecast.dateTimeSecondsUTC,
+                        forecast = forecast,
                         iconUrl = forecast.icon.url,
                         temp = forecast.temp
                     )
@@ -249,14 +242,10 @@ private fun InfoBox(
 
 @Composable
 private fun HourlyForecastItem(
-    dateTimeSecondsUTC: Int,
+    forecast: Forecast,
     iconUrl: String,
     temp: Temperature
 ) {
-    val zonedDateTime = remember { Instant.ofEpochSecond(dateTimeSecondsUTC.toLong()).atZone(ZoneId.systemDefault()) }
-    val day = remember { zonedDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
-    val time = remember { zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm")) }
-
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
     ) {
@@ -265,12 +254,12 @@ private fun HourlyForecastItem(
             modifier = Modifier.padding(8.dp)
         ) {
             Text(
-                text = time,
+                text = forecast.timeUiValue,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onTertiaryContainer
             )
             Text(
-                text = day,
+                text = forecast.dayOfWeekUiValue,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onTertiaryContainer
             )
