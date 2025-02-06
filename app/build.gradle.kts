@@ -91,10 +91,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("com.airbnb.android:lottie-compose:6.1.0")
+    implementation(libs.lottie.compose)
 
-    //TODO: remove
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    //implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 }
 
 kapt {

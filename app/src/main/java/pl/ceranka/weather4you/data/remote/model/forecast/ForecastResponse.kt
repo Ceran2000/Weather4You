@@ -87,7 +87,7 @@ data class Wind(
 
 fun Forecast.asDomain() = ForecastDomainModel(
     dateTimeSecondsUTC = dt,
-    icon = Icon(weather.first().icon),            //TODO
+    icon = Icon(weather.first().icon),
     temp = Temperature(main.temp.roundToInt()),
     precipitationInPercentage = pop.roundToInt()
 )

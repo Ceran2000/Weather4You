@@ -63,7 +63,7 @@ data class Wind(
 )
 
 fun WeatherResponse.asDomain(): WeatherDomainModel {
-    val weather = weather.first()   //TODO
+    val weather = weather.first()
 
     return WeatherDomainModel(
         cityName = name,
