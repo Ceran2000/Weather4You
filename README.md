@@ -35,3 +35,5 @@ Add the following line, replacing `your_api_key` with your actual API key:
 - **Material Design 3** - UI design guidelines by Google.
 - **Flow**
 - **Coroutines**
+- **Lottie** - Animations
+
