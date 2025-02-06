@@ -1,6 +1,7 @@
 package pl.ceranka.weather4you.ui.search_city
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,7 @@ fun SearchCityScreen(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val showSearchQueryError by viewModel.showSearchQueryError.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val initialState by viewModel.initialState.collectAsStateWithLifecycle()
     val recentCities by viewModel.recentCities.collectAsStateWithLifecycle()
 
     val onCityClicked: (City) -> Unit = {
@@ -72,41 +74,35 @@ fun SearchCityScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                AnimatedVisibility(visible = uiState.showResults) {
-                    SearchResultsList(
-                        modifier = Modifier.fillMaxWidth(),
-                        cities = uiState.data ?: emptyList(),
-                        onItemClicked = onCityClicked
-                    )
-                }
+                AnimatedContent(targetState = uiState, label = "ScreenStateAnim") { state ->
+                    when (state) {
+                        is UiState.Initial -> {
+                            initialState.Content(
+                                modifier = Modifier.fillMaxWidth(),
+                                cities = recentCities,
+                                onItemClicked = onCityClicked,
+                                onRemoveClicked = viewModel::onRemoveRecentCityClicked
+                            )
+                        }
 
-                AnimatedVisibility(visible = uiState.showHistory && recentCities.isNotEmpty()) {
-                    RecentCitiesList(
-                        modifier = Modifier.fillMaxWidth(),
-                        cities = recentCities,
-                        onItemClicked = onCityClicked,
-                        onRemoveClicked = viewModel::onRemoveRecentCityClicked
-                    )
-                }
+                        is UiState.ShowResults -> SearchResultsList(
+                            modifier = Modifier.fillMaxWidth(),
+                            cities = uiState.data.orEmpty(),
+                            onItemClicked = onCityClicked
+                        )
 
-                if (uiState.showLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
+                        is UiState.Loading -> Loading(modifier = Modifier.fillMaxWidth())
 
-                if (uiState.showEmptyState) {
-                    Message(
-                        text = stringResource(R.string.search_city_empty_state_message),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                        is UiState.Error -> Message(
+                            text = uiState.errorMessage.orEmpty(),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                if (uiState.showError) {
-                    Message(
-                        text = uiState.errorMessage!!,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        is UiState.Empty -> Message(
+                            text = stringResource(R.string.search_city_empty_state_message),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
@@ -143,30 +139,12 @@ private fun SearchResultsList(
 }
 
 @Composable
-private fun RecentCitiesList(
-    modifier: Modifier,
-    cities: List<City>,
-    onItemClicked: (City) -> Unit,
-    onRemoveClicked: (City) -> Unit
-) {
-    Column(
-        modifier = modifier
+private fun Loading(modifier: Modifier) {
+    Box(
+        modifier
     ) {
-        Text(
-            text = stringResource(R.string.search_city_recent_cities_title),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(bottom = 8.dp)
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center)
         )
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            LazyColumn {
-                items(cities, key = { it.id }) { city ->
-                    RecentItem(city, onItemClicked, onRemoveClicked)
-                }
-            }
-        }
     }
 }

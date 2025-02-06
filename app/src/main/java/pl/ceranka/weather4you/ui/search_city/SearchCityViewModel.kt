@@ -33,7 +33,7 @@ class SearchCityViewModel @Inject constructor(
     private val cityRepository: CityRepository
 ) : AndroidViewModel(application) {
 
-    private val _uiState = MutableStateFlow<UiState<List<City>>>(UiState.ShowHistory)
+    private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -59,7 +59,7 @@ class SearchCityViewModel @Inject constructor(
 
     private suspend fun handleCitySearchQuery(cityName: String) {
         when {
-            cityName.isEmpty() -> _uiState.emit(UiState.ShowHistory)
+            cityName.isEmpty() -> _uiState.emit(UiState.Initial)
             !cityName.matches(searchQueryRegex) -> _uiState.emit(UiState.Empty)
             else -> searchCities(cityName)
         }
@@ -105,6 +105,13 @@ class SearchCityViewModel @Inject constructor(
                 showToast(getString(R.string.unknown_error_message))
             }
         }
+    }
+
+    val initialState: StateFlow<InitialState> by lazy {
+        recentCities.map { list ->
+            if (list.isEmpty()) InitialState.ANIMATION else InitialState.HISTORY
+        }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), InitialState.ANIMATION)
     }
 
     init {

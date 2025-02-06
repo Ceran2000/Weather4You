@@ -1,30 +1,19 @@
 package pl.ceranka.weather4you.ui.search_city
 
-sealed class UiState<out T> {
+import pl.ceranka.weather4you.domain.model.city.City
 
-    open val data: T? = null
-    open val showResults = false
-    open val showHistory = false
-    open val showLoading = false
+sealed class UiState {
+
+    open val data: List<City>? = null
     open val errorMessage: String? = null
-    val showError get() = errorMessage != null
-    open val showEmptyState = false
 
-    data class ShowResults<T>(override val data: T) : UiState<T>() {
-        override val showResults: Boolean = true
-    }
+    data class ShowResults(override val data: List<City>) : UiState()
 
-    data object ShowHistory : UiState<Nothing>() {
-        override val showHistory: Boolean = true
-    }
+    data object Initial : UiState()
 
-    data object Loading : UiState<Nothing>() {
-        override val showLoading = true
-    }
+    data object Loading : UiState()
 
-    data class Error(override val errorMessage: String) : UiState<Nothing>()
+    data class Error(override val errorMessage: String) : UiState()
 
-    data object Empty : UiState<Nothing>() {
-        override val showEmptyState = true
-    }
+    data object Empty : UiState()
 }
