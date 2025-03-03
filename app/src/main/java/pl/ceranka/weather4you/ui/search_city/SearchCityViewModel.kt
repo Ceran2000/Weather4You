@@ -1,7 +1,5 @@
 package pl.ceranka.weather4you.ui.search_city
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,17 +19,16 @@ import kotlinx.coroutines.launch
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.city.City
 import pl.ceranka.weather4you.domain.repository.CityRepository
-import pl.ceranka.weather4you.ui.util.getString
-import pl.ceranka.weather4you.ui.util.showToast
+import pl.ceranka.weather4you.ui.base.BaseViewModel
+import pl.ceranka.weather4you.ui.util.UiText
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 @Suppress("OPT_IN_USAGE")
 @HiltViewModel
 class SearchCityViewModel @Inject constructor(
-    application: Application,
     private val cityRepository: CityRepository
-) : AndroidViewModel(application) {
+) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
@@ -72,7 +69,7 @@ class SearchCityViewModel @Inject constructor(
     }
         .onStart { emit(UiState.Loading) }
         .catch {
-            val errorState = UiState.Error(getString(R.string.unknown_error_message))
+            val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
             emit(errorState)
         }
         .run { _uiState.emitAll(this) }
@@ -90,7 +87,7 @@ class SearchCityViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                showToast(getString(R.string.unknown_error_message))
+                showToast(R.string.unknown_error_message)
             }
         }
     }
@@ -102,7 +99,7 @@ class SearchCityViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                showToast(getString(R.string.unknown_error_message))
+                showToast(R.string.unknown_error_message)
             }
         }
     }

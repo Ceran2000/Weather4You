@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.forecast.Forecast
 import pl.ceranka.weather4you.domain.model.weather.Weather
+import pl.ceranka.weather4you.ui.base.HandleToastMessages
 import pl.ceranka.weather4you.ui.components.CollapsingTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +50,8 @@ fun WeatherForCityScreen(
 
     val weatherState by viewModel.weatherUiState.collectAsStateWithLifecycle()
     val forecasts by viewModel.forecasts.collectAsStateWithLifecycle()
+
+    HandleToastMessages(viewModel)
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -67,7 +70,7 @@ fun WeatherForCityScreen(
 
         if (weatherState.showError) {
             Error(
-                errorMessage = weatherState.errorMessage.orEmpty(),
+                errorMessage = weatherState.errorMessage?.asString().orEmpty(),
                 onRefreshClicked = viewModel::onRefreshClicked,
                 modifier = Modifier.fillMaxSize().padding(innerPadding)
             )

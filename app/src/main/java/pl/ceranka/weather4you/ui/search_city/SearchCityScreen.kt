@@ -1,5 +1,6 @@
 package pl.ceranka.weather4you.ui.search_city
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,19 +19,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.city.City
 import pl.ceranka.weather4you.navigation.WeatherForCity
+import pl.ceranka.weather4you.ui.base.HandleToastMessages
 import pl.ceranka.weather4you.ui.components.TopBar
-import pl.ceranka.weather4you.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,60 +54,60 @@ fun SearchCityScreen(
         navController.navigate(WeatherForCity(it.id))
     }
 
-    AppTheme {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    title = { Text(stringResource(R.string.app_name)) },
-                    navigationAction = null
-                )
-            }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(16.dp)
-            ) {
-                SearchInputField(
-                    searchQuery = searchQuery,
-                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                    onClearSearchQueryClicked = viewModel::onClearSearchQueryClicked,
-                    showError = showSearchQueryError,
-                    modifier = Modifier.fillMaxWidth()
-                )
+    HandleToastMessages(viewModel)
 
-                Spacer(modifier = Modifier.height(16.dp))
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                navigationAction = null
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            SearchInputField(
+                searchQuery = searchQuery,
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onClearSearchQueryClicked = viewModel::onClearSearchQueryClicked,
+                showError = showSearchQueryError,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-                AnimatedContent(targetState = uiState, label = "ScreenStateAnim") { state ->
-                    when (state) {
-                        is UiState.Initial -> {
-                            initialState.Content(
-                                modifier = Modifier.fillMaxWidth(),
-                                cities = recentCities,
-                                onItemClicked = onCityClicked,
-                                onRemoveClicked = viewModel::onRemoveRecentCityClicked
-                            )
-                        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-                        is UiState.ShowResults -> SearchResultsList(
+            AnimatedContent(targetState = uiState, label = "ScreenStateAnim") { state ->
+                when (state) {
+                    is UiState.Initial -> {
+                        initialState.Content(
                             modifier = Modifier.fillMaxWidth(),
-                            cities = uiState.data.orEmpty(),
-                            onItemClicked = onCityClicked
-                        )
-
-                        is UiState.Loading -> Loading(modifier = Modifier.fillMaxWidth())
-
-                        is UiState.Error -> Message(
-                            text = uiState.errorMessage.orEmpty(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        is UiState.Empty -> Message(
-                            text = stringResource(R.string.search_city_empty_state_message),
-                            modifier = Modifier.fillMaxWidth()
+                            cities = recentCities,
+                            onItemClicked = onCityClicked,
+                            onRemoveClicked = viewModel::onRemoveRecentCityClicked
                         )
                     }
+
+                    is UiState.ShowResults -> SearchResultsList(
+                        modifier = Modifier.fillMaxWidth(),
+                        cities = uiState.data.orEmpty(),
+                        onItemClicked = onCityClicked
+                    )
+
+                    is UiState.Loading -> Loading(modifier = Modifier.fillMaxWidth())
+
+                    is UiState.Error -> Message(
+                        text = uiState.errorMessage?.asString().orEmpty(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    is UiState.Empty -> Message(
+                        text = stringResource(R.string.search_city_empty_state_message),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

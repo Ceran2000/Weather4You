@@ -1,7 +1,5 @@
 package pl.ceranka.weather4you.ui.weather_for_city
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,16 +16,16 @@ import pl.ceranka.weather4you.domain.model.forecast.Forecast
 import pl.ceranka.weather4you.domain.model.weather.Weather
 import pl.ceranka.weather4you.domain.repository.ForecastRepository
 import pl.ceranka.weather4you.domain.repository.WeatherRepository
-import pl.ceranka.weather4you.ui.util.getString
+import pl.ceranka.weather4you.ui.base.BaseViewModel
+import pl.ceranka.weather4you.ui.util.UiText
 import javax.inject.Inject
 
 @HiltViewModel
 class WeatherForCityViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val forecastRepository: ForecastRepository,
-    savedStateHandle: SavedStateHandle,
-    application: Application
-) : AndroidViewModel(application) {
+    savedStateHandle: SavedStateHandle
+) : BaseViewModel() {
 
     private val cityId: Int = checkNotNull(savedStateHandle["id"])
 
@@ -46,7 +44,7 @@ class WeatherForCityViewModel @Inject constructor(
     }
         .onStart { emit(UiState.Loading) }
         .catch {
-            val errorState = UiState.Error(getString(R.string.unknown_error_message))
+            val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
             emit(errorState)
         }
         .run { _weatherUiState.emitAll(this) }
