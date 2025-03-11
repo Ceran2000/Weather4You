@@ -1,8 +1,9 @@
 package pl.ceranka.weather4you.ui.search_city
 
 import pl.ceranka.weather4you.domain.model.city.City
+import javax.inject.Inject
 
-class UiStateFactory {
+class UiStateFactory @Inject constructor() {
 
     fun mapCitiesToUiState(cities: List<City>): UiState {
         return if (cities.isEmpty()) {
