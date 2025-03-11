@@ -19,6 +19,7 @@ import pl.ceranka.weather4you.domain.repository.WeatherRepository
 import pl.ceranka.weather4you.ui.base.BaseViewModel
 import pl.ceranka.weather4you.ui.util.UiText
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class WeatherForCityViewModel @Inject constructor(
@@ -43,9 +44,11 @@ class WeatherForCityViewModel @Inject constructor(
         emit(UiState.ShowContent(weather))
     }
         .onStart { emit(UiState.Loading) }
-        .catch {
-            val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
-            emit(errorState)
+        .catch { e ->
+            if (e !is CancellationException) {
+                val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
+                emit(errorState)
+            }
         }
         .run { _weatherUiState.emitAll(this) }
 
@@ -62,7 +65,7 @@ class WeatherForCityViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch {
+        launchWithErrorHandling {
             val weatherDeferred = async { loadWeather() }
             val forecastDeferred = async { loadForecasts() }
 

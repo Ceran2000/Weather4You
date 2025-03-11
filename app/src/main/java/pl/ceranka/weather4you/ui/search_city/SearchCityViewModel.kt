@@ -27,7 +27,8 @@ import kotlin.coroutines.cancellation.CancellationException
 @Suppress("OPT_IN_USAGE")
 @HiltViewModel
 class SearchCityViewModel @Inject constructor(
-    private val cityRepository: CityRepository
+    private val cityRepository: CityRepository,
+    private val uiStateFactory: UiStateFactory
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
@@ -64,13 +65,15 @@ class SearchCityViewModel @Inject constructor(
 
     private suspend fun searchCities(cityName: String) = flow {
         val cities = cityRepository.searchCities(cityName)
-        val state = if (cities.isEmpty()) UiState.Empty else UiState.ShowResults(cities)
+        val state = uiStateFactory.mapCitiesToUiState(cities)
         emit(state)
     }
         .onStart { emit(UiState.Loading) }
-        .catch {
-            val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
-            emit(errorState)
+        .catch { e ->
+            if (e !is CancellationException) {
+                val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
+                emit(errorState)
+            }
         }
         .run { _uiState.emitAll(this) }
 
@@ -81,33 +84,20 @@ class SearchCityViewModel @Inject constructor(
     }
 
     fun onCityItemClicked(city: City) {
-        viewModelScope.launch {
-            try {
-                cityRepository.addCityToHistory(city)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                showToast(R.string.unknown_error_message)
-            }
+        launchWithErrorHandling {
+            cityRepository.addCityToHistory(city)
         }
     }
 
     fun onRemoveRecentCityClicked(city: City) {
-        viewModelScope.launch {
-            try {
-                cityRepository.deleteCityFromHistory(city.id)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                showToast(R.string.unknown_error_message)
-            }
+        launchWithErrorHandling {
+            cityRepository.deleteCityFromHistory(city.id)
         }
     }
 
     val initialState: StateFlow<InitialState> by lazy {
-        recentCities.map { list ->
-            if (list.isEmpty()) InitialState.ANIMATION else InitialState.HISTORY
-        }
+        recentCities
+            .map { list -> uiStateFactory.determineInitialState(list) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), InitialState.ANIMATION)
     }
 
