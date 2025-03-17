@@ -17,12 +17,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,9 +36,11 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.city.City
+import pl.ceranka.weather4you.domain.model.city.Coord
 import pl.ceranka.weather4you.navigation.WeatherForCity
 import pl.ceranka.weather4you.ui.base.HandleToastMessages
 import pl.ceranka.weather4you.ui.components.TopBar
+import pl.ceranka.weather4you.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -211,5 +215,25 @@ private fun Loading(modifier: Modifier) {
         CircularProgressIndicator(
             modifier = Modifier.align(Alignment.Center)
         )
+    }
+}
+
+// Preview
+
+@Preview(showBackground = true)
+@Composable
+fun SearchResultsListPreview() {
+    AppTheme {
+        Surface(Modifier.padding(16.dp)) {
+            SearchResultsList(
+                modifier = Modifier.fillMaxWidth(),
+                cities = listOf(
+                    City(1, "London", "UK", Coord(51.5074, -0.1278)),
+                    City(2, "Paris", "FR", Coord(48.8566, 2.3522)),
+                    City(3, "New York", "US", Coord(40.7128, -74.0060))
+                ),
+                onItemClicked = {}
+            )
+        }
     }
 }

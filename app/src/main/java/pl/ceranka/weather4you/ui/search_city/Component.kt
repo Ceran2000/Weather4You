@@ -3,6 +3,7 @@ package pl.ceranka.weather4you.ui.search_city
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,9 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.city.City
+import pl.ceranka.weather4you.domain.model.city.Coord
+import pl.ceranka.weather4you.ui.theme.AppTheme
 
 @Composable
 fun SearchInputField(
@@ -175,4 +180,31 @@ fun Message(
         textAlign = TextAlign.Center,
         modifier = modifier
     )
+}
+
+// Previews
+private val testCity = City(id = 1, name = "London", country = "UK", coord = Coord(lat = 51.5074, lon = -0.1278))
+
+@Preview(showBackground = true)
+@Composable
+fun ItemsPreview() {
+    AppTheme {
+        Surface {
+            Column {
+                SearchResultItem(
+                    city = testCity,
+                    onItemClicked = {}
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                RecentItem(
+                    city = testCity,
+                    onItemClicked = {},
+                    onRemoveClicked = {}
+                )
+
+            }
+        }
+    }
 }
