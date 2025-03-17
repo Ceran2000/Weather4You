@@ -48,6 +48,8 @@ class WeatherForCityViewModel @Inject constructor(
             if (e !is CancellationException) {
                 val errorState = UiState.Error(UiText.StringResource(R.string.unknown_error_message))
                 emit(errorState)
+            } else {
+                throw e // Re-throw CancellationException for proper coroutine cancellation
             }
         }
         .run { _weatherUiState.emitAll(this) }
