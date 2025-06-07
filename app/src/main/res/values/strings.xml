@@ -10,6 +10,8 @@
     <string name="search_city_empty_state_message">No results</string>
     <string name="search_city_search_input_field_label">Search city</string>
     <string name="search_city_search_input_field_error_message">Invalid city name</string>
+    <string name="search_city_use_location_button">Use location</string>
+    <string name="search_city_location_permission_denied_message">Location permission is required to get the current location.</string>
     <!-- [/SearchCity]   -->
 
     <!-- [WeatherForCity] -->
@@ -20,6 +22,6 @@
     <string name="weather_for_city_visibility_label">Visibility</string>
     <string name="weather_for_city_precipitation_label">Precipitation</string>
     <string name="weather_for_city_hourly_forecast_title">Hourly Forecast</string>
-    <string name="weather_for_city_refersh_button">Refresh</string>
+    <string name="weather_for_city_refresh_button">Refresh</string>
     <!-- [/WeatherForCity] -->
 </resources>

@@ -20,4 +20,6 @@ class CityRepository @Inject constructor(private val localRepository: CityLocalR
     suspend fun deleteCityFromHistory(id: Int) = localRepository.deleteCity(id)
 
     suspend fun clearHistory() = localRepository.clearCities()
+
+    suspend fun getCityNameByCoordinates(lat: Double, lon: Double): String = remoteRepository.getCityNameByCoordinates(lat, lon)
 }

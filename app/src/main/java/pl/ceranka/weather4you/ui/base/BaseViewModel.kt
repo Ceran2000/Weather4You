@@ -2,7 +2,6 @@ package pl.ceranka.weather4you.ui.base
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -19,9 +18,7 @@ abstract class BaseViewModel: ViewModel() {
         showToast(R.string.unknown_error_message)
     }
 
-    protected fun launchWithErrorHandling(block: suspend CoroutineScope.() -> Unit) {
-        viewModelScope.launch(exceptionHandler, block = block)
-    }
+    fun CoroutineScope.launchWithErrorHandling(block: suspend CoroutineScope.() -> Unit) = launch(exceptionHandler, block = block)
 
     private val _toastMessage = Channel<UiText>()
     val toastMessage = _toastMessage.receiveAsFlow()

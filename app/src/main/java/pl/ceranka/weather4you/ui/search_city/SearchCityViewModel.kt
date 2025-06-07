@@ -1,10 +1,15 @@
 package pl.ceranka.weather4you.ui.search_city
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
@@ -15,10 +20,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.city.City
 import pl.ceranka.weather4you.domain.repository.CityRepository
+import pl.ceranka.weather4you.infrastructure.location.LocationClient
+import pl.ceranka.weather4you.infrastructure.location.LocationPermissionsRequiredException
 import pl.ceranka.weather4you.ui.base.BaseViewModel
 import pl.ceranka.weather4you.ui.util.UiText
 import javax.inject.Inject
@@ -28,7 +34,8 @@ import kotlin.coroutines.cancellation.CancellationException
 @HiltViewModel
 class SearchCityViewModel @Inject constructor(
     private val cityRepository: CityRepository,
-    private val uiStateFactory: UiStateFactory
+    private val uiStateFactory: UiStateFactory,
+    private val locationClient: LocationClient
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
@@ -84,13 +91,13 @@ class SearchCityViewModel @Inject constructor(
     }
 
     fun onCityItemClicked(city: City) {
-        launchWithErrorHandling {
+        viewModelScope.launchWithErrorHandling {
             cityRepository.addCityToHistory(city)
         }
     }
 
     fun onRemoveRecentCityClicked(city: City) {
-        launchWithErrorHandling {
+        viewModelScope.launchWithErrorHandling {
             cityRepository.deleteCityFromHistory(city.id)
         }
     }
@@ -99,6 +106,31 @@ class SearchCityViewModel @Inject constructor(
         recentCities
             .map { list -> uiStateFactory.determineInitialState(list) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), InitialState.ANIMATION)
+    }
+
+    private val _requestLocationPermissions = MutableSharedFlow<Array<String>>()
+    val requestLocationPermissions: Flow<Array<String>> = _requestLocationPermissions.asSharedFlow()
+
+    private val _showLoading = mutableStateOf(false)
+    val showLoading by _showLoading
+
+    private fun showLoading() { _showLoading.value = true }
+    private fun hideLoading() { _showLoading.value = false }
+
+
+    fun onGetLocationClicked() {
+        viewModelScope.launchWithErrorHandling {
+            try {
+                //TODO: navigate to weather instantly
+                showLoading()
+                val location = locationClient.getCurrentLocation()!!
+                val cityName = cityRepository.getCityNameByCoordinates(location.latitude, location.longitude)
+                _searchQuery.value = cityName
+            } catch (e: LocationPermissionsRequiredException) {
+                _requestLocationPermissions.emit(e.permissions)
+            }
+            hideLoading()
+        }
     }
 
     init {

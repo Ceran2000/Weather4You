@@ -10,6 +10,8 @@
     <string name="search_city_empty_state_message">Brak wyników</string>
     <string name="search_city_search_input_field_label">Wyszukaj miasto</string>
     <string name="search_city_search_input_field_error_message">Nieprawidłowa nazwa miasta</string>
+    <string name="search_city_use_location_button">Użyj lokalizacji</string>
+    <string name="search_city_location_permission_denied_message">Uprawnienia lokalizacji są wymagane, aby uzyskać aktualną lokalizację,</string>
     <!-- [/SearchCity]   -->
 
     <!-- [WeatherForCity] -->
@@ -20,6 +22,6 @@
     <string name="weather_for_city_visibility_label">Widoczność</string>
     <string name="weather_for_city_precipitation_label">Opady</string>
     <string name="weather_for_city_hourly_forecast_title">Prognoza godzinowa</string>
-    <string name="weather_for_city_refersh_button">Odśwież</string>
+    <string name="weather_for_city_refresh_button">Odśwież</string>
     <!-- [/WeatherForCity] -->
 </resources>

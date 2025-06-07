@@ -176,7 +176,7 @@ private fun Error(
                 onClick = onRefreshClicked,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(text = stringResource(R.string.weather_for_city_refersh_button))
+                Text(text = stringResource(R.string.weather_for_city_refresh_button))
             }
         }
     }

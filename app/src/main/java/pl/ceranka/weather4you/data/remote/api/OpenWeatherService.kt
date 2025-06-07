@@ -34,6 +34,15 @@ interface OpenWeatherService {
         @Query("lang") lang: String = Locale.current.language
     ): Call<ForecastResponse>
 
+    @GET("weather")
+    suspend fun getWeatherByCoordinates(
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
+        @Query("appid") apiKey: String = BuildConfig.OPEN_WEATHER_API_KEY,
+        @Query("units") units: String = UNITS_METRIC,
+        @Query("lang") lang: String = Locale.current.language
+    ): WeatherResponse
+
     companion object {
         private const val UNITS_METRIC = "metric"
     }

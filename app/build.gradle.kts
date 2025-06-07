@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.lottie.compose)
 
+    implementation(libs.play.services.location)
+
     testImplementation(libs.junit)
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation (libs.kotlinx.coroutines.test)

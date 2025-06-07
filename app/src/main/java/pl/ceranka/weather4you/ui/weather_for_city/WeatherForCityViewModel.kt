@@ -67,7 +67,7 @@ class WeatherForCityViewModel @Inject constructor(
     }
 
     init {
-        launchWithErrorHandling {
+        viewModelScope.launchWithErrorHandling {
             val weatherDeferred = async { loadWeather() }
             val forecastDeferred = async { loadForecasts() }
 

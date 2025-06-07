@@ -18,6 +18,16 @@ class CityRemoteRepository @Inject constructor(private val service: OpenWeatherS
         }
     }
 
+    suspend fun getCityNameByCoordinates(latitude: Double, longitude: Double): String {
+        return try {
+            val weather = service.getWeatherByCoordinates(latitude, longitude)
+            weather.name
+        } catch (e: Exception) {
+            Log.e(TAG, "Error when fetching city by coordinates ($latitude, $longitude)", e)
+            throw e
+        }
+    }
+
     companion object {
         private const val TAG = "CityRepository"
     }
