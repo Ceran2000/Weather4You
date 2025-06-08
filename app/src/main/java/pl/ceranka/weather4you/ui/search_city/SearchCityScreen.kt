@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,8 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import pl.ceranka.weather4you.R
 import pl.ceranka.weather4you.domain.model.city.City
 import pl.ceranka.weather4you.domain.model.city.Coord
@@ -66,6 +69,12 @@ fun SearchCityScreen(
     val onCityClicked: (City) -> Unit = {
         viewModel.onCityItemClicked(it)
         navController.navigate(WeatherForCity(it.id))
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigateToWeatherForCity
+            .onEach { navController.navigate(WeatherForCity(it)) }
+            .launchIn(this)
     }
 
     HandleToastMessages(viewModel)
@@ -97,7 +106,7 @@ fun SearchCityScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .offset(x = -(16.dp))
+                    .offset(x = -(12.dp))
                     .clip(CircleShape)
                     .clickable(onClick = viewModel::onGetLocationClicked)
                     .padding(vertical = 8.dp, horizontal = 12.dp)

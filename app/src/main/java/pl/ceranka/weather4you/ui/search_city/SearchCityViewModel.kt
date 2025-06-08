@@ -108,8 +108,20 @@ class SearchCityViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), InitialState.ANIMATION)
     }
 
-    private val _requestLocationPermissions = MutableSharedFlow<Array<String>>()
-    val requestLocationPermissions: Flow<Array<String>> = _requestLocationPermissions.asSharedFlow()
+    fun onGetLocationClicked() {
+        viewModelScope.launchWithErrorHandling {
+            try {
+                showLoading()
+                val location = locationClient.getCurrentLocation()!!
+                val city = cityRepository.getCityNameByCoordinates(location.latitude, location.longitude)
+                cityRepository.addCityToHistory(city)
+                _navigateToWeatherForCity.emit(city.id)
+            } catch (e: LocationPermissionsRequiredException) {
+                _requestLocationPermissions.emit(e.permissions)
+            }
+            hideLoading()
+        }
+    }
 
     private val _showLoading = mutableStateOf(false)
     val showLoading by _showLoading
@@ -117,21 +129,11 @@ class SearchCityViewModel @Inject constructor(
     private fun showLoading() { _showLoading.value = true }
     private fun hideLoading() { _showLoading.value = false }
 
+    private val _navigateToWeatherForCity = MutableSharedFlow<Int>()
+    val navigateToWeatherForCity: Flow<Int> = _navigateToWeatherForCity.asSharedFlow()
 
-    fun onGetLocationClicked() {
-        viewModelScope.launchWithErrorHandling {
-            try {
-                //TODO: navigate to weather instantly
-                showLoading()
-                val location = locationClient.getCurrentLocation()!!
-                val cityName = cityRepository.getCityNameByCoordinates(location.latitude, location.longitude)
-                _searchQuery.value = cityName
-            } catch (e: LocationPermissionsRequiredException) {
-                _requestLocationPermissions.emit(e.permissions)
-            }
-            hideLoading()
-        }
-    }
+    private val _requestLocationPermissions = MutableSharedFlow<Array<String>>()
+    val requestLocationPermissions: Flow<Array<String>> = _requestLocationPermissions.asSharedFlow()
 
     init {
         searchQuery
